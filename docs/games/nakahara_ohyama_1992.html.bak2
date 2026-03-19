@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中原誠 vs 大山康晴 1992 — Kiri</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/kifu-for-js@2.1.0/bundle/kifu-for-js.js"></script>
+  <style>
+    /* KifuFor.js テーマ上書き */
+    .kifu-for-js-wrap {
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border) !important;
+      padding: 1rem;
+    }
+    .kifu-for-js-wrap .player-control {
+      background: var(--bg) !important;
+    }
+    .kifu-for-js-wrap .board-wrap {
+      filter: sepia(0.3) brightness(0.9);
+    }
+    .kifu-for-js-wrap .player-info {
+      color: var(--text-secondary) !important;
+      font-family: var(--font-mono) !important;
+      font-size: 0.75rem !important;
+    }
+    #allMoves tr.highlight-move td {
+      background: rgba(200,169,110,0.1) !important;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">
+    <span class="nav-logo-kiri">Kiri</span>
+    <span class="nav-logo-jp">霧 — 将棋解析</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="../index.html#games">Games</a></li>
+    <li><a href="../index.html#archive">Archive</a></li>
+    <li><a href="../index.html#about">About</a></li>
+  </ul>
+</nav>
+
+<div class="game-hero">
+  <div class="game-hero-bg"></div>
+  <div class="game-hero-overlay"></div>
+  <div class="game-hero-content">
+    <p style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.25em;color:var(--accent-gold);margin-bottom:0.8rem;">棋王戦 1992</p>
+    <h1 style="font-family:var(--font-serif-jp);font-size:clamp(1.6rem,3vw,2.8rem);font-weight:300;margin-bottom:0.5rem;">
+      中原誠 <span style="color:var(--text-muted);font-size:0.6em;letter-spacing:0.2em;">VS</span> 大山康晴
+    </h1>
+    <p style="font-family:var(--font-mono);font-size:0.75rem;letter-spacing:0.1em;color:var(--text-secondary);">
+      1992.04.02 ／ 棋王戦 ／ 四間飛車 ／ 91手
+    </p>
+  </div>
+</div>
+
+<div class="game-main">
+  <div>
+    <div class="chart-container">
+      <p class="chart-title">棋譜再生 — Board Viewer</p>
+      <div id="kifu-player"></div>
+    </div>
+    <div class="chart-container">
+      <p class="chart-title">評価値推移 — Evaluation Graph</p>
+      <div class="chart-legend">
+        <div class="chart-legend-item"><div class="legend-dot" style="background:var(--engine-mizusho)"></div>水匠5</div>
+        <div class="chart-legend-item"><div class="legend-dot" style="background:var(--engine-tanuki)"></div>tanuki</div>
+        <div class="chart-legend-item"><div class="legend-dot" style="background:var(--accent-gold);opacity:0.6"></div>乖離</div>
+      </div>
+      <canvas id="evalChart" height="200"></canvas>
+    </div>
+    <div class="chart-container">
+      <p class="chart-title">エンジン乖離 — Divergence (tanuki − 水匠5)</p>
+      <canvas id="divergenceChart" height="100"></canvas>
+    </div>
+    <div class="chart-container">
+      <p class="chart-title">重要局面 — Key Moments (乖離 Top 5)</p>
+      <table class="moves-table">
+        <thead><tr><th>#</th><th>手</th><th>水匠5</th><th>tanuki</th><th>乖離</th><th>注記</th></tr></thead>
+        <tbody id="keyMoves"></tbody>
+      </table>
+    </div>
+    <details style="margin-top:1px;">
+      <summary style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.2em;color:var(--text-muted);padding:1rem 1.5rem;background:var(--bg-card);border:1px solid var(--border);cursor:pointer;list-style:none;">
+        ▸ 全手評価値テーブル（クリックで展開）
+      </summary>
+      <div class="chart-container" style="margin-top:1px;">
+        <table class="moves-table">
+          <thead><tr><th>#</th><th>手</th><th>水匠5</th><th>tanuki</th><th>乖離</th><th>勝率</th></tr></thead>
+          <tbody id="allMoves"></tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <div>
+    <div class="sidebar-card">
+      <p class="sidebar-card-title">対局情報</p>
+      <div class="info-row"><span class="info-label">棋戦</span><span class="info-val">棋王戦</span></div>
+      <div class="info-row"><span class="info-label">日付</span><span class="info-val">1992.04.02</span></div>
+      <div class="info-row"><span class="info-label">先手</span><span class="info-val">中原誠</span></div>
+      <div class="info-row"><span class="info-label">後手</span><span class="info-val">大山康晴</span></div>
+      <div class="info-row"><span class="info-label">戦型</span><span class="info-val">四間飛車</span></div>
+      <div class="info-row"><span class="info-label">手数</span><span class="info-val">91手</span></div>
+    </div>
+    <div class="sidebar-card" style="margin-top:1px;">
+      <p class="sidebar-card-title">解析設定</p>
+      <div class="info-row"><span class="info-label">エンジン1</span><span class="info-val" style="color:var(--engine-mizusho)">水匠5</span></div>
+      <div class="info-row"><span class="info-label">エンジン2</span><span class="info-val" style="color:var(--engine-tanuki)">tanuki</span></div>
+      <div class="info-row"><span class="info-label">探索深さ</span><span class="info-val">depth 12</span></div>
+    </div>
+    <div class="sidebar-card" style="margin-top:1px;">
+      <p class="sidebar-card-title">乖離サマリー</p>
+      <div class="info-row"><span class="info-label">最大乖離</span><span class="info-val" style="color:var(--accent-gold)">-255</span></div>
+      <div class="info-row"><span class="info-label">発生局面</span><span class="info-val">31手目</span></div>
+      <div class="info-row"><span class="info-label">平均乖離</span><span class="info-val">±103</span></div>
+      <div class="info-row"><span class="info-label">乖離>100手</span><span class="info-val">45手</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-logo">Kiri</span>
+  <span class="footer-copy">© 2026 — 将棋 AI 解析プロジェクト</span>
+</footer>
+
+<script>
+// KIF棋譜データ
+const kifText = `開始日時：1992/04/02 9:00:00
+棋戦：棋王戦
+先手：中原誠
+後手：大山康晴
+手合割：平手
+手数----指手---------消費時間--
+1 ７六歩(77) (00:00/00:00:00)
+2 ３四歩(33) (00:00/00:00:00)
+3 ２六歩(27) (00:00/00:00:00)
+4 ４四歩(43) (00:00/00:00:00)
+5 ４八銀(39) (00:00/00:00:00)
+6 ３二銀(31) (00:00/00:00:00)
+7 ５六歩(57) (00:00/00:00:00)
+8 ４二飛(82) (00:00/00:00:00)
+9 ６八玉(59) (00:00/00:00:00)
+10 ６二玉(51) (00:00/00:00:00)
+11 ７八玉(68) (00:00/00:00:00)
+12 ７二玉(62) (00:00/00:00:00)
+13 ５八金(49) (00:00/00:00:00)
+14 ８二玉(72) (00:00/00:00:00)
+15 ９六歩(97) (00:00/00:00:00)
+16 ９四歩(93) (00:00/00:00:00)
+17 ６八銀(79) (00:00/00:00:00)
+18 ７二銀(71) (00:00/00:00:00)
+19 ３六歩(37) (00:00/00:00:00)
+20 ４三銀(32) (00:00/00:00:00)
+21 ５七銀(68) (00:00/00:00:00)
+22 ６四歩(63) (00:00/00:00:00)
+23 ２五歩(26) (00:00/00:00:00)
+24 ３三角(22) (00:00/00:00:00)
+25 ３七銀(48) (00:00/00:00:00)
+26 ３二金(41) (00:00/00:00:00)
+27 ２六銀(37) (00:00/00:00:00)
+28 ６三銀(72) (00:00/00:00:00)
+29 ３五歩(36) (00:00/00:00:00)
+30 ７四歩(73) (00:00/00:00:00)
+31 ３四歩(35) (00:00/00:00:00)
+32 同　銀(43) (00:00/00:00:00)
+33 ３八飛(28) (00:00/00:00:00)
+34 ４三銀(34) (00:00/00:00:00)
+35 ３五銀(26) (00:00/00:00:00)
+36 ７二飛(42) (00:00/00:00:00)
+37 ６六銀(57) (00:00/00:00:00)
+38 ５四歩(53) (00:00/00:00:00)
+39 ４六歩(47) (00:00/00:00:00)
+40 ６五歩(64) (00:00/00:00:00)
+41 ７七銀(66) (00:00/00:00:00)
+42 ６四銀(63) (00:00/00:00:00)
+43 ４五歩(46) (00:00/00:00:00)
+44 同　歩(44) (00:00/00:00:00)
+45 ４四歩打 (00:00/00:00:00)
+46 ５二銀(43) (00:00/00:00:00)
+47 ３四銀(35) (00:00/00:00:00)
+48 ４四角(33) (00:00/00:00:00)
+49 ４五銀(34) (00:00/00:00:00)
+50 ３三角(44) (00:00/00:00:00)
+51 ４四銀(45) (00:00/00:00:00)
+52 ６三銀(52) (00:00/00:00:00)
+53 ３三銀成(44) (00:00/00:00:00)
+54 同　金(32) (00:00/00:00:00)
+55 ３四歩打 (00:00/00:00:00)
+56 ４四金(33) (00:00/00:00:00)
+57 ３三歩成(34) (00:00/00:00:00)
+58 ３六歩打 (00:00/00:00:00)
+59 ４八飛(38) (00:00/00:00:00)
+60 ４六歩打 (00:00/00:00:00)
+61 ６八銀(77) (00:00/00:00:00)
+62 ５五歩(54) (00:00/00:00:00)
+63 ４六飛(48) (00:00/00:00:00)
+64 ３五銀打 (00:00/00:00:00)
+65 ３四と(33) (00:00/00:00:00)
+66 ４六銀(35) (00:00/00:00:00)
+67 ４四と(34) (00:00/00:00:00)
+68 ５六歩(55) (00:00/00:00:00)
+69 ４五角打 (00:00/00:00:00)
+70 ５二銀(63) (00:00/00:00:00)
+71 ５四と(44) (00:00/00:00:00)
+72 ５七歩成(56) (00:00/00:00:00)
+73 同　金(58) (00:00/00:00:00)
+74 同　銀成(46) (00:00/00:00:00)
+75 同　銀(68) (00:00/00:00:00)
+76 ４九飛打 (00:00/00:00:00)
+77 ４八歩打 (00:00/00:00:00)
+78 ７三銀(64) (00:00/00:00:00)
+79 ５三歩打 (00:00/00:00:00)
+80 ４七歩打 (00:00/00:00:00)
+81 ５二歩成(53) (00:00/00:00:00)
+82 同　飛(72) (00:00/00:00:00)
+83 ５三銀打 (00:00/00:00:00)
+84 ５六歩打 (00:00/00:00:00)
+85 同　角(45) (00:00/00:00:00)
+86 ５三飛(52) (00:00/00:00:00)
+87 同　と(54) (00:00/00:00:00)
+88 ４八歩成(47) (00:00/00:00:00)
+89 ４二飛打 (00:00/00:00:00)
+90 ５二歩打 (00:00/00:00:00)
+91 同　と(53) (00:00/00:00:00)
+92 投了 (00:00/00:00:00)
+`;
+
+// KifuFor.js プレイヤー初期化
+let kifPlayer = null;
+try {
+  kifPlayer = KifuPlayer.fromKIF(kifText, {kifu: false});
+  document.getElementById("kifu-player").appendChild(kifPlayer.element);
+} catch (e) {
+  console.error("KifuFor.js の初期化に失敗:", e);
+}
+
+const moves = [
+  {
+    "num": 1,
+    "move_jp": "７六歩",
+    "水匠5": 172,
+    "tanuki": 67,
+    "winrate": 57.1
+  },
+  {
+    "num": 2,
+    "move_jp": "３四歩",
+    "水匠5": 163,
+    "tanuki": 55,
+    "winrate": 56.8
+  },
+  {
+    "num": 3,
+    "move_jp": "２六歩",
+    "水匠5": 160,
+    "tanuki": 90,
+    "winrate": 56.6
+  },
+  {
+    "num": 4,
+    "move_jp": "４四歩",
+    "水匠5": 158,
+    "tanuki": 108,
+    "winrate": 56.5
+  },
+  {
+    "num": 5,
+    "move_jp": "４八銀",
+    "水匠5": 144,
+    "tanuki": 162,
+    "winrate": 56.0
+  },
+  {
+    "num": 6,
+    "move_jp": "３二銀",
+    "水匠5": 154,
+    "tanuki": 182,
+    "winrate": 56.4
+  },
+  {
+    "num": 7,
+    "move_jp": "５六歩",
+    "水匠5": 196,
+    "tanuki": 142,
+    "winrate": 58.1
+  },
+  {
+    "num": 8,
+    "move_jp": "４二飛",
+    "水匠5": 123,
+    "tanuki": 45,
+    "winrate": 55.1
+  },
+  {
+    "num": 9,
+    "move_jp": "６八玉",
+    "水匠5": 317,
+    "tanuki": 283,
+    "winrate": 62.9
+  },
+  {
+    "num": 10,
+    "move_jp": "６二玉",
+    "水匠5": 291,
+    "tanuki": 260,
+    "winrate": 61.9
+  },
+  {
+    "num": 11,
+    "move_jp": "７八玉",
+    "水匠5": 297,
+    "tanuki": 226,
+    "winrate": 62.1
+  },
+  {
+    "num": 12,
+    "move_jp": "７二玉",
+    "水匠5": 283,
+    "tanuki": 222,
+    "winrate": 61.6
+  },
+  {
+    "num": 13,
+    "move_jp": "５八金",
+    "水匠5": 315,
+    "tanuki": 223,
+    "winrate": 62.8
+  },
+  {
+    "num": 14,
+    "move_jp": "８二玉",
+    "水匠5": 304,
+    "tanuki": 230,
+    "winrate": 62.4
+  },
+  {
+    "num": 15,
+    "move_jp": "９六歩",
+    "水匠5": 300,
+    "tanuki": 291,
+    "winrate": 62.2
+  },
+  {
+    "num": 16,
+    "move_jp": "９四歩",
+    "水匠5": 274,
+    "tanuki": 288,
+    "winrate": 61.2
+  },
+  {
+    "num": 17,
+    "move_jp": "６八銀",
+    "水匠5": 366,
+    "tanuki": 216,
+    "winrate": 64.8
+  },
+  {
+    "num": 18,
+    "move_jp": "７二銀",
+    "水匠5": 183,
+    "tanuki": 126,
+    "winrate": 57.6
+  },
+  {
+    "num": 19,
+    "move_jp": "３六歩",
+    "水匠5": 194,
+    "tanuki": 166,
+    "winrate": 58.0
+  },
+  {
+    "num": 20,
+    "move_jp": "４三銀",
+    "水匠5": 202,
+    "tanuki": 166,
+    "winrate": 58.3
+  },
+  {
+    "num": 21,
+    "move_jp": "５七銀",
+    "水匠5": 165,
+    "tanuki": 138,
+    "winrate": 56.8
+  },
+  {
+    "num": 22,
+    "move_jp": "６四歩",
+    "水匠5": 45,
+    "tanuki": 123,
+    "winrate": 51.9
+  },
+  {
+    "num": 23,
+    "move_jp": "２五歩",
+    "水匠5": 137,
+    "tanuki": 124,
+    "winrate": 55.7
+  },
+  {
+    "num": 24,
+    "move_jp": "３三角",
+    "水匠5": 156,
+    "tanuki": 124,
+    "winrate": 56.5
+  },
+  {
+    "num": 25,
+    "move_jp": "３七銀",
+    "水匠5": 145,
+    "tanuki": 113,
+    "winrate": 56.0
+  },
+  {
+    "num": 26,
+    "move_jp": "３二金",
+    "水匠5": 91,
+    "tanuki": 97,
+    "winrate": 53.8
+  },
+  {
+    "num": 27,
+    "move_jp": "２六銀",
+    "水匠5": 151,
+    "tanuki": 110,
+    "winrate": 56.3
+  },
+  {
+    "num": 28,
+    "move_jp": "６三銀",
+    "水匠5": 110,
+    "tanuki": 85,
+    "winrate": 54.6
+  },
+  {
+    "num": 29,
+    "move_jp": "３五歩",
+    "水匠5": 111,
+    "tanuki": 146,
+    "winrate": 54.6
+  },
+  {
+    "num": 30,
+    "move_jp": "７四歩",
+    "水匠5": 124,
+    "tanuki": 132,
+    "winrate": 55.1
+  },
+  {
+    "num": 31,
+    "move_jp": "３四歩",
+    "水匠5": 626,
+    "tanuki": 371,
+    "winrate": 73.9
+  },
+  {
+    "num": 32,
+    "move_jp": "同",
+    "水匠5": 510,
+    "tanuki": 337,
+    "winrate": 70.1
+  },
+  {
+    "num": 33,
+    "move_jp": "３八飛",
+    "水匠5": 530,
+    "tanuki": 352,
+    "winrate": 70.8
+  },
+  {
+    "num": 34,
+    "move_jp": "４三銀",
+    "水匠5": 498,
+    "tanuki": 308,
+    "winrate": 69.6
+  },
+  {
+    "num": 35,
+    "move_jp": "３五銀",
+    "水匠5": 520,
+    "tanuki": 318,
+    "winrate": 70.4
+  },
+  {
+    "num": 36,
+    "move_jp": "７二飛",
+    "水匠5": 458,
+    "tanuki": 392,
+    "winrate": 68.2
+  },
+  {
+    "num": 37,
+    "move_jp": "６六銀",
+    "水匠5": 476,
+    "tanuki": 396,
+    "winrate": 68.9
+  },
+  {
+    "num": 38,
+    "move_jp": "５四歩",
+    "水匠5": 441,
+    "tanuki": 397,
+    "winrate": 67.6
+  },
+  {
+    "num": 39,
+    "move_jp": "４六歩",
+    "水匠5": 465,
+    "tanuki": 383,
+    "winrate": 68.5
+  },
+  {
+    "num": 40,
+    "move_jp": "６五歩",
+    "水匠5": 302,
+    "tanuki": 272,
+    "winrate": 62.3
+  },
+  {
+    "num": 41,
+    "move_jp": "７七銀",
+    "水匠5": 297,
+    "tanuki": 244,
+    "winrate": 62.1
+  },
+  {
+    "num": 42,
+    "move_jp": "６四銀",
+    "水匠5": 323,
+    "tanuki": 243,
+    "winrate": 63.1
+  },
+  {
+    "num": 43,
+    "move_jp": "４五歩",
+    "水匠5": 288,
+    "tanuki": 228,
+    "winrate": 61.8
+  },
+  {
+    "num": 44,
+    "move_jp": "同",
+    "水匠5": 345,
+    "tanuki": 241,
+    "winrate": 64.0
+  },
+  {
+    "num": 45,
+    "move_jp": "４四歩",
+    "水匠5": 510,
+    "tanuki": 334,
+    "winrate": 70.1
+  },
+  {
+    "num": 46,
+    "move_jp": "５二銀",
+    "水匠5": 493,
+    "tanuki": 313,
+    "winrate": 69.5
+  },
+  {
+    "num": 47,
+    "move_jp": "３四銀",
+    "水匠5": 564,
+    "tanuki": 350,
+    "winrate": 71.9
+  },
+  {
+    "num": 48,
+    "move_jp": "４四角",
+    "水匠5": 553,
+    "tanuki": 364,
+    "winrate": 71.5
+  },
+  {
+    "num": 49,
+    "move_jp": "４五銀",
+    "水匠5": 551,
+    "tanuki": 391,
+    "winrate": 71.5
+  },
+  {
+    "num": 50,
+    "move_jp": "３三角",
+    "水匠5": 588,
+    "tanuki": 411,
+    "winrate": 72.7
+  },
+  {
+    "num": 51,
+    "move_jp": "４四銀",
+    "水匠5": 641,
+    "tanuki": 422,
+    "winrate": 74.4
+  },
+  {
+    "num": 52,
+    "move_jp": "６三銀",
+    "水匠5": 662,
+    "tanuki": 422,
+    "winrate": 75.1
+  },
+  {
+    "num": 53,
+    "move_jp": "３三銀成",
+    "水匠5": 657,
+    "tanuki": 444,
+    "winrate": 74.9
+  },
+  {
+    "num": 54,
+    "move_jp": "同",
+    "水匠5": 635,
+    "tanuki": 456,
+    "winrate": 74.2
+  },
+  {
+    "num": 55,
+    "move_jp": "３四歩",
+    "水匠5": 636,
+    "tanuki": 475,
+    "winrate": 74.3
+  },
+  {
+    "num": 56,
+    "move_jp": "４四金",
+    "水匠5": 664,
+    "tanuki": 475,
+    "winrate": 75.2
+  },
+  {
+    "num": 57,
+    "move_jp": "３三歩成",
+    "水匠5": 672,
+    "tanuki": 475,
+    "winrate": 75.4
+  },
+  {
+    "num": 58,
+    "move_jp": "３六歩",
+    "水匠5": 650,
+    "tanuki": 508,
+    "winrate": 74.7
+  },
+  {
+    "num": 59,
+    "move_jp": "４八飛",
+    "水匠5": 681,
+    "tanuki": 562,
+    "winrate": 75.7
+  },
+  {
+    "num": 60,
+    "move_jp": "４六歩",
+    "水匠5": 690,
+    "tanuki": 466,
+    "winrate": 76.0
+  },
+  {
+    "num": 61,
+    "move_jp": "６八銀",
+    "水匠5": 690,
+    "tanuki": 501,
+    "winrate": 76.0
+  },
+  {
+    "num": 62,
+    "move_jp": "５五歩",
+    "水匠5": 697,
+    "tanuki": 507,
+    "winrate": 76.2
+  },
+  {
+    "num": 63,
+    "move_jp": "４六飛",
+    "水匠5": 674,
+    "tanuki": 501,
+    "winrate": 75.5
+  },
+  {
+    "num": 64,
+    "move_jp": "３五銀",
+    "水匠5": 653,
+    "tanuki": 534,
+    "winrate": 74.8
+  },
+  {
+    "num": 65,
+    "move_jp": "３四と",
+    "水匠5": 692,
+    "tanuki": 535,
+    "winrate": 76.0
+  },
+  {
+    "num": 66,
+    "move_jp": "４六銀",
+    "水匠5": 710,
+    "tanuki": 594,
+    "winrate": 76.6
+  },
+  {
+    "num": 67,
+    "move_jp": "４四と",
+    "水匠5": 684,
+    "tanuki": 630,
+    "winrate": 75.8
+  },
+  {
+    "num": 68,
+    "move_jp": "５六歩",
+    "水匠5": 742,
+    "tanuki": 632,
+    "winrate": 77.5
+  },
+  {
+    "num": 69,
+    "move_jp": "４五角",
+    "水匠5": 694,
+    "tanuki": 630,
+    "winrate": 76.1
+  },
+  {
+    "num": 70,
+    "move_jp": "５二銀",
+    "水匠5": 662,
+    "tanuki": 630,
+    "winrate": 75.1
+  },
+  {
+    "num": 71,
+    "move_jp": "５四と",
+    "水匠5": 730,
+    "tanuki": 612,
+    "winrate": 77.1
+  },
+  {
+    "num": 72,
+    "move_jp": "５七歩成",
+    "水匠5": 728,
+    "tanuki": 630,
+    "winrate": 77.1
+  },
+  {
+    "num": 73,
+    "move_jp": "同",
+    "水匠5": 728,
+    "tanuki": 586,
+    "winrate": 77.1
+  },
+  {
+    "num": 74,
+    "move_jp": "同",
+    "水匠5": 695,
+    "tanuki": 586,
+    "winrate": 76.1
+  },
+  {
+    "num": 75,
+    "move_jp": "同",
+    "水匠5": 733,
+    "tanuki": 577,
+    "winrate": 77.2
+  },
+  {
+    "num": 76,
+    "move_jp": "４九飛",
+    "水匠5": 698,
+    "tanuki": 584,
+    "winrate": 76.2
+  },
+  {
+    "num": 77,
+    "move_jp": "４八歩",
+    "水匠5": 714,
+    "tanuki": 614,
+    "winrate": 76.7
+  },
+  {
+    "num": 78,
+    "move_jp": "７三銀",
+    "水匠5": 738,
+    "tanuki": 643,
+    "winrate": 77.4
+  },
+  {
+    "num": 79,
+    "move_jp": "５三歩",
+    "水匠5": 761,
+    "tanuki": 633,
+    "winrate": 78.0
+  },
+  {
+    "num": 80,
+    "move_jp": "４七歩",
+    "水匠5": 763,
+    "tanuki": 644,
+    "winrate": 78.1
+  },
+  {
+    "num": 81,
+    "move_jp": "５二歩成",
+    "水匠5": 736,
+    "tanuki": 605,
+    "winrate": 77.3
+  },
+  {
+    "num": 82,
+    "move_jp": "同",
+    "水匠5": 721,
+    "tanuki": 616,
+    "winrate": 76.9
+  },
+  {
+    "num": 83,
+    "move_jp": "５三銀",
+    "水匠5": 758,
+    "tanuki": 643,
+    "winrate": 78.0
+  },
+  {
+    "num": 84,
+    "move_jp": "５六歩",
+    "水匠5": 694,
+    "tanuki": 657,
+    "winrate": 76.1
+  },
+  {
+    "num": 85,
+    "move_jp": "同",
+    "水匠5": 737,
+    "tanuki": 611,
+    "winrate": 77.4
+  },
+  {
+    "num": 86,
+    "move_jp": "５三飛",
+    "水匠5": 747,
+    "tanuki": 676,
+    "winrate": 77.6
+  },
+  {
+    "num": 87,
+    "move_jp": "同",
+    "水匠5": 775,
+    "tanuki": 654,
+    "winrate": 78.4
+  },
+  {
+    "num": 88,
+    "move_jp": "４八歩成",
+    "水匠5": 743,
+    "tanuki": 671,
+    "winrate": 77.5
+  },
+  {
+    "num": 89,
+    "move_jp": "４二飛",
+    "水匠5": 768,
+    "tanuki": 694,
+    "winrate": 78.2
+  },
+  {
+    "num": 90,
+    "move_jp": "５二歩",
+    "水匠5": 698,
+    "tanuki": 682,
+    "winrate": 76.2
+  },
+  {
+    "num": 91,
+    "move_jp": "同",
+    "水匠5": 761,
+    "tanuki": 606,
+    "winrate": 78.0
+  }
+];
+
+const labels      = moves.map(m => m.num + "手");
+// 手番視点(side-to-move)の生スコアをそのままグラフ表示
+// 正=手番側有利 / 序盤は小さくジグザグ / 中終盤は先手優勢で安定上昇
+const mizushoData = moves.map(m => m["水匠5"] ?? null);
+const tanukiData  = moves.map(m => m["tanuki"] ?? null);
+const divData     = moves.map(m => (m["tanuki"] != null && m["水匠5"] != null) ? m["tanuki"] - m["水匠5"] : null);
+// 先手視点変換(テーブル用)
+const toSente = (v) => v;  // JSON側で先手視点済み  // 符号はJSON側で先手視点に統一済み
+
+const chartCfg = {
+  responsive: true,
+  plugins: { legend: { display: false }, tooltip: {
+    backgroundColor: "#1a1918", borderColor: "rgba(255,255,255,0.1)", borderWidth: 1,
+    titleColor: "#9a9490", bodyColor: "#e8e4dc",
+    titleFont: { family: "JetBrains Mono", size: 11 },
+    bodyFont:  { family: "JetBrains Mono", size: 12 },
+  }},
+  scales: {
+    x: { ticks: { color:"#5a5652", font:{family:"JetBrains Mono",size:10} }, grid:{color:"rgba(255,255,255,0.04)"} },
+    y: { ticks: { color:"#5a5652", font:{family:"JetBrains Mono",size:10} }, grid:{color:"rgba(255,255,255,0.04)"} },
+  }
+};
+
+// グラフクリック→盤面連動のハンドラ
+function onChartClick(e, elements) {
+  if (elements.length > 0 && kifPlayer) {
+    const idx = elements[0].index;
+    try { kifPlayer.goto(idx); } catch (err) { console.error(err); }
+    highlightMove(idx);
+  }
+}
+
+function highlightMove(idx) {
+  const tbody = document.getElementById("allMoves");
+  if (!tbody) return;
+  const rows = tbody.querySelectorAll("tr");
+  rows.forEach(r => r.classList.remove("highlight-move"));
+  if (rows[idx]) {
+    rows[idx].classList.add("highlight-move");
+    rows[idx].scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+const evalChart = new Chart(document.getElementById("evalChart"), {
+  type: "line",
+  data: { labels, datasets: [
+    { label:"水匠5", data:mizushoData, borderColor:"#6aacdc", borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true },
+    { label:"tanuki", data:tanukiData, borderColor:"#dc8a6a", borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true },
+  ]},
+  options: { ...chartCfg, onClick: onChartClick },
+});
+
+new Chart(document.getElementById("divergenceChart"), {
+  type: "bar",
+  data: { labels, datasets: [{
+    label:"乖離", data:divData,
+    backgroundColor: divData.map(v => v != null && Math.abs(v) > 80 ? "rgba(200,169,110,0.6)" : "rgba(200,169,110,0.2)"),
+    borderColor: "rgba(200,169,110,0.4)", borderWidth:1,
+  }]},
+  options: { ...chartCfg, onClick: onChartClick },
+});
+
+// 乖離Top5（先手視点の乖離で計算）
+const sorted = [...moves].filter(m => m["水匠5"] != null && m["tanuki"] != null)
+  .map(m => ({...m, _m: toSente(m["水匠5"], m.num), _t: toSente(m["tanuki"], m.num)}))
+  .sort((a,b) => Math.abs(b._t - b._m) - Math.abs(a._t - a._m)).slice(0,5);
+const keyTbody = document.getElementById("keyMoves");
+sorted.forEach(m => {
+  const d = m._t - m._m;
+  keyTbody.innerHTML += `<tr>
+    <td class="move-num">${m.num}</td>
+    <td class="move-jp">${m.move_jp}</td>
+    <td class="val-pos">${m._m >= 0 ? "+" : ""}${m._m}</td>
+    <td class="val-pos">${m._t >= 0 ? "+" : ""}${m._t}</td>
+    <td style="color:var(--accent-gold);font-weight:500">${d >= 0 ? "+" : ""}${d}</td>
+    <td style="color:var(--text-muted);font-size:0.7rem">${Math.abs(d) > 100 ? "霧の核心" : Math.abs(d) > 50 ? "要注目" : ""}</td>
+  </tr>`;
+});
+
+// 全手テーブル（先手視点で表示）
+const allTbody = document.getElementById("allMoves");
+moves.forEach(m => {
+  const sm = toSente(m["水匠5"], m.num);
+  const st = toSente(m["tanuki"], m.num);
+  const d = (sm != null && st != null) ? st - sm : null;
+  allTbody.innerHTML += `<tr>
+    <td class="move-num">${m.num}</td>
+    <td class="move-jp">${m.move_jp}</td>
+    <td class="val-pos">${sm != null ? (sm >= 0 ? "+" : "") + sm : "—"}</td>
+    <td class="val-pos">${st != null ? (st >= 0 ? "+" : "") + st : "—"}</td>
+    <td style="color:${d != null && Math.abs(d) > 80 ? "var(--accent-gold)" : "var(--text-secondary)"}">${d != null ? (d >= 0 ? "+" : "") + d : "—"}</td>
+    <td style="color:var(--text-muted)">${m.winrate}%</td>
+  </tr>`;
+});
+</script>
+</body>
+</html>

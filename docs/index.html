@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiri — 将棋 AI 解析</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-kiri">Kiri</span>
+    <span class="nav-logo-jp">霧 — 将棋解析</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#games">Games</a></li>
+    <li><a href="#archive">Archive</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">AI Shogi Analysis / Dual Engine</p>
+    <h1 class="hero-title">Kiri</h1>
+    <p class="hero-title-jp">霧 — 見えない優位を、数値で照らす</p>
+    <p class="hero-desc">
+      水匠5とtanukiの評価値を並べ、その乖離を可視化する。<br>
+      相手エンジンが気づいていない優位——それが「霧」の正体だ。
+    </p>
+    <a href="#games" class="hero-cta">棋譜を見る →</a>
+  </div>
+  <div class="hero-scroll">
+    <span>scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section>
+  <p class="section-label">Features</p>
+  <h2 class="section-title">何ができるか</h2>
+  <p class="section-title-jp">このサイトの機能</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚔</div>
+      <p class="feature-title">Dual Engine Analysis</p>
+      <p class="feature-title-jp">2エンジン比較解析</p>
+      <p class="feature-desc">水匠5とtanukiの評価値を全手にわたって並列取得。単一エンジンでは見えない評価の乖離を可視化する。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">◈</div>
+      <p class="feature-title">Divergence Graph</p>
+      <p class="feature-title-jp">乖離グラフ</p>
+      <p class="feature-desc">2エンジン間の評価値差分をインタラクティブなChart.jsグラフで表示。どの局面で認識の「霧」が生じたかを一目で把握できる。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✦</div>
+      <p class="feature-title">AI Commentary</p>
+      <p class="feature-title-jp">AI局面解説</p>
+      <p class="feature-desc">評価値変化が大きい局面をClaudeが自動ピックアップし、自然言語で解説。なぜそこが分岐点だったかを平明な言葉で。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⊙</div>
+      <p class="feature-title">Archive</p>
+      <p class="feature-title-jp">名局アーカイブ</p>
+      <p class="feature-desc">大山康晴・升田幸三の名局、江戸時代の御城将棋まで。現代エンジンで過去の名局を再照射する。</p>
+    </div>
+  </div>
+</section>
+
+<!-- GAMES -->
+<section id="games">
+  <div class="games-header">
+    <div>
+      <p class="section-label">Recent Games</p>
+      <h2 class="section-title">最新解析</h2>
+      <p class="section-title-jp" style="margin-bottom:0">直近の解析棋譜</p>
+    </div>
+    <a href="#" class="view-all">すべて見る →</a>
+  </div>
+  <div class="games-grid">
+
+    <!-- Card 1 -->
+    <a href="games/nakahara_ohyama_1992.html" class="game-card">
+      <div class="game-card-thumb">
+        <span class="game-card-badge">名局アーカイブ</span>
+      </div>
+      <div class="game-card-body">
+        <p class="game-card-meta">1992.02.14 — 棋王戦第2局</p>
+        <p class="game-card-title">中原誠 vs 大山康晴</p>
+        <p class="game-card-sub">四間飛車 ／ 91手 先手勝</p>
+        <div class="engine-bars">
+          <div class="engine-bar-row">
+            <span class="engine-name">水匠5</span>
+            <div class="engine-bar-track">
+              <div class="engine-bar-fill mizusho" style="width:62%"></div>
+            </div>
+            <span class="engine-val">+312</span>
+          </div>
+          <div class="engine-bar-row">
+            <span class="engine-name">tanuki</span>
+            <div class="engine-bar-track">
+              <div class="engine-bar-fill tanuki" style="width:55%"></div>
+            </div>
+            <span class="engine-val">+278</span>
+          </div>
+        </div>
+        <div class="divergence-badge">△ 乖離 max +144 (48手目)</div>
+      </div>
+    </a>
+
+    <!-- Card 2: 加藤vs藤井 -->
+    <a href="games/kato_fujii_2016.html" class="game-card">
+      <div class="game-card-thumb">
+        <span class="game-card-badge">名局アーカイブ</span>
+      </div>
+      <div class="game-card-body">
+        <p class="game-card-meta">2016.12.24 — 竜王戦6組</p>
+        <p class="game-card-title">加藤一二三 vs 藤井聡太</p>
+        <p class="game-card-sub">矢倉 ／ 110手 後手勝</p>
+        <div class="engine-bars">
+          <div class="engine-bar-row">
+            <span class="engine-name">水匠5</span>
+            <div class="engine-bar-track">
+              <div class="engine-bar-fill mizusho" style="width:38%"></div>
+            </div>
+            <span class="engine-val">-382</span>
+          </div>
+          <div class="engine-bar-row">
+            <span class="engine-name">tanuki</span>
+            <div class="engine-bar-track">
+              <div class="engine-bar-fill tanuki" style="width:32%"></div>
+            </div>
+            <span class="engine-val">-316</span>
+          </div>
+        </div>
+        <div class="divergence-badge">△ 乖離 max +144 (43手目)</div>
+      </div>
+    </a>
+
+    <!-- Card 3: placeholder -->
+    <a href="#" class="game-card">
+      <div class="game-card-thumb" style="display:flex;align-items:center;justify-content:center;">
+        <span class="game-card-badge">準備中</span>
+      </div>
+      <div class="game-card-body">
+        <p class="game-card-meta">近日公開</p>
+        <p class="game-card-title">大山康晴シリーズ</p>
+        <p class="game-card-sub">vs 升田幸三 名局選</p>
+        <div class="engine-bars">
+          <div class="engine-bar-row">
+            <span class="engine-name">水匠5</span>
+            <div class="engine-bar-track">
+              <div class="engine-bar-fill mizusho" style="width:0%"></div>
+            </div>
+            <span class="engine-val">—</span>
+          </div>
+          <div class="engine-bar-row">
+            <span class="engine-name">tanuki</span>
+            <div class="engine-bar-track">
+              <div class="engine-bar-fill tanuki" style="width:0%"></div>
+            </div>
+            <span class="engine-val">—</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ABOUT STRIP -->
+<div class="about-strip" id="about">
+  <section>
+    <div class="about-quote">
+      The opponent is losing<br>
+      <em>without knowing it.</em>
+    </div>
+    <div class="about-body">
+      <p>Kiriは、複数エンジンの評価値乖離を核心に置く将棋解析プロジェクトです。水匠5とtanukiが同じ局面を異なる値で評価するとき、その差分の中に「一方のエンジンが見えていない何か」が潜んでいます。</p>
+      <p>棋譜をKIFとして入力すると、Mac mini上のやねうら王が全手をdepth 12で解析。Chart.jsによるインタラクティブなグラフと、Claudeによる局面解説を自動生成します。</p>
+      <p>サーバー不要。静的HTMLとして生成し、Cloudflare Pagesで公開します。</p>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">Kiri</span>
+  <span class="footer-copy">© 2026 — 将棋 AI 解析プロジェクト</span>
+</footer>
+
+</body>
+</html>
