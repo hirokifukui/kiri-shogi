@@ -165,7 +165,7 @@
       <canvas id="evalChart" height="200"></canvas>
     </div>
     <div class="chart-container">
-      <p class="chart-title">エンジン乖離 — Divergence (tanuki − 水匠5)</p>
+      <p class="chart-title">エンジン乖離 — Divergence (エンジン間最大乖離)</p>
       <canvas id="divergenceChart" height="100"></canvas>
     </div>
     <div class="chart-container">
@@ -581,11 +581,14 @@ function updateCandidates(idx) {
   }
 
   const scoreToWinrate = s => Math.round(100 / (1 + Math.exp(-s / 600)) * 10) / 10;
+  const MATE_THRESHOLD = 29000;
+  const isMate = (v) => v !== null && v !== undefined && Math.abs(v) >= MATE_THRESHOLD;
+  const toDisplayScore = s => isMate(s) ? (s > 0 ? 3000 : -3000) : s;
 
   const s1 = move['水匠5'] ?? 0;
   const s2 = move['tanuki'] ?? 0;
-  const wr1 = scoreToWinrate(s1);
-  const wr2 = scoreToWinrate(s2);
+  const wr1 = scoreToWinrate(toDisplayScore(s1));
+  const wr2 = scoreToWinrate(toDisplayScore(s2));
 
   document.getElementById('bar-mizusho').style.width = wr1 + '%';
   document.getElementById('winrate-mizusho').textContent =
@@ -596,8 +599,8 @@ function updateCandidates(idx) {
 
   const s3 = move['Kristallweizen'] ?? 0;
   const s4 = move['dlshogi'] ?? 0;
-  const wr3 = scoreToWinrate(s3);
-  const wr4 = scoreToWinrate(s4);
+  const wr3 = scoreToWinrate(toDisplayScore(s3));
+  const wr4 = scoreToWinrate(toDisplayScore(s4));
 
   document.getElementById('bar-kristallweizen').style.width = wr3 + '%';
   document.getElementById('winrate-kristallweizen').textContent =
@@ -610,6 +613,18 @@ function updateCandidates(idx) {
   const maxDiv = scores.length > 1 ? Math.max(...scores) - Math.min(...scores) : 0;
   document.getElementById('divergence-line').textContent =
     `エンジン間最大乖離: ${maxDiv}cp`;
+
+  // 詰み検出表示
+  const mateEngines = [
+    ['水匠5', s1], ['tanuki', s2], ['Kristallweizen', s3], ['dlshogi', s4]
+  ].filter(([, v]) => isMate(v));
+  if (mateEngines.length > 0) {
+    const winner = mateEngines[0][1] > 0 ? '先手勝ち' : '後手勝ち';
+    headerEl.textContent += ` ── 詰み検出 (${winner})`;
+    headerEl.style.color = mateEngines[0][1] > 0 ? 'var(--engine-mizusho)' : 'var(--engine-tanuki)';
+  } else {
+    headerEl.style.color = '';
+  }
 
   const renderList = (id, candidates) => {
     const el = document.getElementById(id);
@@ -27382,9 +27397,23 @@ const moves = [
 const labels      = moves.map(m => m.num + "手");
 // 手番視点(side-to-move)の生スコアをそのままグラフ表示
 // 正=手番側有利 / 序盤は小さくジグザグ / 中終盤は先手優勢で安定上昇
-const mizushoData = moves.map(m => m["水匠5"] ?? null);
-const tanukiData  = moves.map(m => m["tanuki"] ?? null);
-const divData     = moves.map(m => (m["tanuki"] != null && m["水匠5"] != null) ? m["tanuki"] - m["水匠5"] : null);
+const MATE_SCORE = 29000;
+const clipScore = v => {
+  if (v === null || v === undefined) return null;
+  if (v >= MATE_SCORE) return 3000;
+  if (v <= -MATE_SCORE) return -3000;
+  return Math.max(-3000, Math.min(3000, v));
+};
+const mizushoData = moves.map(m => clipScore(m["水匠5"] ?? null));
+const tanukiData  = moves.map(m => clipScore(m["tanuki"] ?? null));
+const divData = moves.map(m => {
+  const vals = ['水匠5','tanuki','Kristallweizen','dlshogi']
+    .map(k => m[k])
+    .filter(v => v != null && Math.abs(v) < MATE_SCORE);
+  if (vals.length < 2) return null;
+  const d = Math.max(...vals) - Math.min(...vals);
+  return Math.min(d, 3000);
+});
 // 先手視点変換(テーブル用)
 const toSente = (v) => v;  // JSON側で先手視点済み  // 符号はJSON側で先手視点に統一済み
 
@@ -27398,7 +27427,7 @@ const chartCfg = {
   }},
   scales: {
     x: { ticks: { color:"#5a5652", font:{family:"JetBrains Mono",size:10} }, grid:{color:"rgba(255,255,255,0.04)"} },
-    y: { ticks: { color:"#5a5652", font:{family:"JetBrains Mono",size:10} }, grid:{color:"rgba(255,255,255,0.04)"} },
+    y: { min:-3000, max:3000, ticks: { color:"#5a5652", font:{family:"JetBrains Mono",size:10} }, grid:{color:"rgba(255,255,255,0.04)"} },
   }
 };
 
