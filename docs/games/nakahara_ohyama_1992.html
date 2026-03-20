@@ -243,11 +243,11 @@ function initBoard() {
   // 後手 (row0-2, s=-1)
   const r0g = [2,3,4,5,8,5,4,3,2]; // 香桂銀金王金銀桂香
   r0g.forEach((p,c)=>B[0][c]={p,s:-1});
-  B[1][1]={p:6,s:-1}; B[1][7]={p:7,s:-1}; // 角・飛
+  B[1][1]={p:7,s:-1}; B[1][7]={p:6,s:-1}; // 角・飛
   for(let c=0;c<9;c++) B[2][c]={p:1,s:-1}; // 歩
   // 先手 (row6-8, s=1)
   for(let c=0;c<9;c++) B[6][c]={p:1,s:1};
-  B[7][1]={p:7,s:1}; B[7][7]={p:6,s:1};
+  B[7][1]={p:6,s:1}; B[7][7]={p:7,s:1};
   const r8s = [2,3,4,5,8,5,4,3,2];
   r8s.forEach((p,c)=>B[8][c]={p,s:1});
   return B;
@@ -519,7 +519,7 @@ function renderBoard(idx) {
         'dominant-baseline':'middle',
         fill: textCol,
         'font-size': CELL * 0.55,
-        'font-family': 'serif',
+        'font-family': 'Yu Mincho, YuMincho, 游明朝, Hiragino Mincho ProN, serif',
         transform: isGote ? `rotate(180,${cx},${cy})` : ''
       });
       t.textContent = lbl;
@@ -535,7 +535,7 @@ function renderBoard(idx) {
     }).textContent = colLabels[i];
     g('text',{x:SZ-MARGIN+4, y:MARGIN+i*CELL+CELL/2, 'text-anchor':'start',
       'dominant-baseline':'middle', 'font-size':'7', fill:'rgba(255,255,255,0.3)',
-      'font-family':'serif'
+      'font-family':'Yu Mincho, YuMincho, 游明朝, Hiragino Mincho ProN, serif'
     }).textContent = rowLabels[i];
   }
 
