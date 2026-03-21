@@ -202,14 +202,16 @@
       <p class="sidebar-card-title">解析設定</p>
       <div class="info-row"><span class="info-label">エンジン1</span><span class="info-val" style="color:var(--engine-mizusho)">水匠5</span></div>
       <div class="info-row"><span class="info-label">エンジン2</span><span class="info-val" style="color:var(--engine-tanuki)">tanuki</span></div>
+      <div class="info-row"><span class="info-label">エンジン3</span><span class="info-val" style="color:#8adc9a">Kristallweizen</span></div>
+      <div class="info-row"><span class="info-label">エンジン4</span><span class="info-val" style="color:#c88adc">dlshogi</span></div>
       <div class="info-row"><span class="info-label">探索深さ</span><span class="info-val">depth 12</span></div>
     </div>
     <div class="sidebar-card" style="margin-top:1px;">
       <p class="sidebar-card-title">乖離サマリー</p>
-      <div class="info-row"><span class="info-label">最大乖離</span><span class="info-val" style="color:var(--accent-gold)">-255</span></div>
-      <div class="info-row"><span class="info-label">発生局面</span><span class="info-val">31手目</span></div>
-      <div class="info-row"><span class="info-label">平均乖離</span><span class="info-val">±103</span></div>
-      <div class="info-row"><span class="info-label">乖離>100手</span><span class="info-val">45手</span></div>
+      <div class="info-row"><span class="info-label">最大乖離</span><span class="info-val" style="color:var(--accent-gold)">-440</span></div>
+      <div class="info-row"><span class="info-label">発生局面</span><span class="info-val">67手目</span></div>
+      <div class="info-row"><span class="info-label">平均乖離</span><span class="info-val">±93</span></div>
+      <div class="info-row"><span class="info-label">乖離>100手</span><span class="info-val">27手</span></div>
     </div>
   </div>
 </div>
@@ -220,12 +222,10 @@
 </footer>
 
 <script>
-// KIF棋譜データ
 // =====================================================================
 // 自作将棋盤エンジン — Kiri Board Engine (pure JS + SVG)
 // =====================================================================
 
-// 駒の日本語 → 内部ID
 const KOMA_MAP = {
   '歩':1,'香':2,'桂':3,'銀':4,'金':5,'角':6,'飛':7,'王':8,'玉':8,
   'と':11,'成香':12,'成桂':13,'成銀':14,'馬':16,'竜':17,'龍':17
@@ -236,16 +236,12 @@ const UNPROMOTE = {11:1,12:2,13:3,14:4,16:6,17:7};
 const KANJI_NUM = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
 const ZEN_NUM = {'１':1,'２':2,'３':3,'４':4,'５':5,'６':6,'７':7,'８':8,'９':9};
 
-// 初期盤面 board[row][col]  row:0-8(上→下=後手1段目→先手1段目), col:0-8(右→左=9筋→1筋)
-// 値: {p:駒ID, s:1先手/-1後手}
 function initBoard() {
   const B = Array.from({length:9}, ()=>Array(9).fill(null));
-  // 後手 (row0-2, s=-1)
-  const r0g = [2,3,4,5,8,5,4,3,2]; // 香桂銀金王金銀桂香
+  const r0g = [2,3,4,5,8,5,4,3,2];
   r0g.forEach((p,c)=>B[0][c]={p,s:-1});
-  B[1][1]={p:7,s:-1}; B[1][7]={p:6,s:-1}; // 角・飛
-  for(let c=0;c<9;c++) B[2][c]={p:1,s:-1}; // 歩
-  // 先手 (row6-8, s=1)
+  B[1][1]={p:7,s:-1}; B[1][7]={p:6,s:-1};
+  for(let c=0;c<9;c++) B[2][c]={p:1,s:-1};
   for(let c=0;c<9;c++) B[6][c]={p:1,s:1};
   B[7][1]={p:6,s:1}; B[7][7]={p:7,s:1};
   const r8s = [2,3,4,5,8,5,4,3,2];
@@ -253,15 +249,12 @@ function initBoard() {
   return B;
 }
 
-// KIF手番文字列をパースして {from,to,promote,drop,piece} を返す
 function parseKifMove(line, board) {
-  // 例: "31 ３四歩(35)" "45 ４四歩打"
   const m = line.match(/^\s*\d+\s+(.+?)(?:\s+\(\d+:\d+.*\))?\s*$/);
   if (!m) return null;
   const s = m[1].trim();
   if (s === '投了' || s === '中断' || s === '千日手' || s === '持将棋') return {end:true};
 
-  // 駒打ち "４四歩打"
   const drop = s.match(/^([１-９])([一二三四五六七八九])([\S]+?)打$/);
   if (drop) {
     const col = 9 - ZEN_NUM[drop[1]];
@@ -270,7 +263,6 @@ function parseKifMove(line, board) {
     return {to:{r:row,c:col}, drop:true, piece:KOMA_MAP[piece]||1};
   }
 
-  // 通常手・成り "３四歩(35)" or "同　歩(35)" or "３三銀成(44)"
   const norm = s.match(/^(?:([１-９])([一二三四五六七八九])|同[　\s]*)(.+?)(成)?\((\d)(\d)\)$/);
   if (norm) {
     let toR, toC;
@@ -278,7 +270,6 @@ function parseKifMove(line, board) {
       toC = 9 - ZEN_NUM[norm[1]];
       toR = KANJI_NUM[norm[2]] - 1;
     } else {
-      // 同 — 直前の to を使う（呼び出し側で lastTo を渡す）
       toR = parseKifMove._lastTo ? parseKifMove._lastTo.r : 0;
       toC = parseKifMove._lastTo ? parseKifMove._lastTo.c : 0;
     }
@@ -291,25 +282,21 @@ function parseKifMove(line, board) {
   return null;
 }
 
-// 盤面に手を適用してコピーを返す
 function applyMove(board, caps, mv, sente) {
   const B = board.map(r=>r.map(c=>c?{...c}:null));
   const C = {s:{...caps.s}, g:{...caps.g}};
   if (mv.end) return {board:B, caps:C};
 
   const key = sente ? 's' : 'g';
-  const oppKey = sente ? 'g' : 's';
 
   if (mv.drop) {
-    // 持駒から打つ
     const pid = mv.piece;
     const lbl = KOMA_LABEL[pid];
     if (C[key][lbl] > 0) C[key][lbl]--;
     B[mv.to.r][mv.to.c] = {p:pid, s:sente?1:-1};
   } else {
     const cell = B[mv.from.r][mv.from.c];
-    if (!cell) return {board:B, caps:C}; // 異常
-    // 取る駒があれば持駒に
+    if (!cell) return {board:B, caps:C};
     const target = B[mv.to.r][mv.to.c];
     if (target) {
       const base = UNPROMOTE[target.p] || target.p;
@@ -323,14 +310,12 @@ function applyMove(board, caps, mv, sente) {
   return {board:B, caps:C};
 }
 
-// KIFから全局面を事前生成
 function buildPositions(kifLines) {
   let board = initBoard();
   let caps = {s:{}, g:{}};
   const positions = [{board:board.map(r=>r.map(c=>c?{...c}:null)), caps:{s:{...caps.s},g:{...caps.g}}, moveStr:'初期局面'}];
   parseKifMove._lastTo = null;
 
-  let moveCount = 0;
   for (const line of kifLines) {
     const tm = line.match(/^\s*(\d+)\s+/);
     if (!tm) continue;
@@ -342,24 +327,24 @@ function buildPositions(kifLines) {
     const res = applyMove(board, caps, mv, isSente);
     board = res.board;
     caps  = res.caps;
-    // 手の表示文字列
     const movePart = line.replace(/^\s*\d+\s+/, '').replace(/\s*\(\d+:\d+.*\)\s*$/, '').trim();
     positions.push({
       board:board.map(r=>r.map(c=>c?{...c}:null)),
       caps:{s:{...caps.s},g:{...caps.g}},
       moveStr:`${num}手目 — ${movePart}`
     });
-    moveCount++;
   }
   return positions;
 }
 
-// KIF文字列
 const kifLines = `開始日時：1992/04/02 9:00:00
 棋戦：棋王戦
+場所：東京「将棋会館」
+持ち時間：3時間
+手合割：平手
 先手：中原誠
 後手：大山康晴
-手合割：平手
+戦型：四間飛車
 手数----指手---------消費時間--
 1 ７六歩(77) (00:00/00:00:00)
 2 ３四歩(33) (00:00/00:00:00)
@@ -457,7 +442,6 @@ const kifLines = `開始日時：1992/04/02 9:00:00
 const positions = buildPositions(kifLines);
 let boardIdx = 0;
 
-// SVG盤面描画
 function renderBoard(idx) {
   const pos = positions[Math.min(idx, positions.length-1)];
   const board = pos.board;
@@ -472,20 +456,16 @@ function renderBoard(idx) {
     (parent||svg).appendChild(el); return el;
   };
 
-  // 盤の背景
   g('rect',{x:MARGIN,y:MARGIN,width:SZ-MARGIN*2,height:SZ-MARGIN*2,fill:'#2a2318',rx:'1'});
 
-  // グリッド線
   for(let i=0;i<=9;i++){
     const x=MARGIN+i*CELL, y=MARGIN+i*CELL;
-    g('line',{x1:x,y1:MARGIN,x2:x,y2:SZ-MARGIN,stroke:'rgba(255,255,255,0.12)',  'stroke-width':'0.5'});
+    g('line',{x1:x,y1:MARGIN,x2:x,y2:SZ-MARGIN,stroke:'rgba(255,255,255,0.12)','stroke-width':'0.5'});
     g('line',{x1:MARGIN,y1:y,x2:SZ-MARGIN,y2:y,stroke:'rgba(255,255,255,0.12)','stroke-width':'0.5'});
   }
 
-  // 最終手ハイライト
   if (idx > 0) {
     const prevPos = positions[idx-1];
-    // 前局面と比較してどのセルが変わったかを検出
     for(let r=0;r<9;r++){
       for(let c=0;c<9;c++){
         const cur = board[r][c];
@@ -498,7 +478,6 @@ function renderBoard(idx) {
     }
   }
 
-  // 駒を描画
   for(let r=0;r<9;r++){
     for(let c=0;c<9;c++){
       const cell = board[r][c];
@@ -508,9 +487,6 @@ function renderBoard(idx) {
       const isGote = cell.s === -1;
       const lbl = KOMA_LABEL[cell.p] || '?';
       const isPromoted = cell.p >= 11;
-
-      // 駒の色
-      const fill = isGote ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)';
       const textCol = isPromoted ? '#c8a96e' : (isGote ? '#9ab8cc' : '#e8e4dc');
 
       const t = g('text',{
@@ -526,7 +502,6 @@ function renderBoard(idx) {
     }
   }
 
-  // 筋・段ラベル
   const colLabels = ['９','８','７','６','５','４','３','２','１'];
   const rowLabels = ['一','二','三','四','五','六','七','八','九'];
   for(let i=0;i<9;i++){
@@ -539,10 +514,8 @@ function renderBoard(idx) {
     }).textContent = rowLabels[i];
   }
 
-  // 手番カウンター
   document.getElementById('move-counter').textContent = pos.moveStr;
 
-  // 持駒
   const fmtCaps = (cap) => {
     const parts = Object.entries(cap).filter(([,n])=>n>0).map(([k,n])=>n>1?k+n:k);
     return parts.length ? parts.join(' ') : 'なし';
@@ -551,32 +524,36 @@ function renderBoard(idx) {
   document.getElementById('cap-gote').textContent  = fmtCaps(pos.caps.g);
 }
 
-let currentMove = positions.length - 1;
-
 function updateCandidates(idx) {
   const headerEl = document.getElementById('cand-header-bar');
-  const move = moves[idx];
-  if (move) {
-    headerEl.textContent = `${move.num}手目局面 — 次の候補手`;
-  } else {
-    headerEl.textContent = idx >= moves.length ? '最終局面' : '初期局面';
-  }
+  let move = moves[idx];
 
+  // idx が範囲外の場合の処理
   if (!move) {
-    document.getElementById('bar-mizusho').style.width = '50%';
-    document.getElementById('winrate-mizusho').textContent = '—';
-    document.getElementById('bar-tanuki').style.width = '50%';
-    document.getElementById('winrate-tanuki').textContent = '—';
-    document.getElementById('bar-kristallweizen').style.width = '50%';
-    document.getElementById('winrate-kristallweizen').textContent = '—';
-    document.getElementById('bar-dlshogi').style.width = '50%';
-    document.getElementById('winrate-dlshogi').textContent = '—';
-    document.getElementById('divergence-line').textContent = '乖離: —';
-    document.getElementById('candidates-mizusho').innerHTML = '';
-    document.getElementById('candidates-tanuki').innerHTML = '';
-    document.getElementById('candidates-kristallweizen').innerHTML = '';
-    document.getElementById('candidates-dlshogi').innerHTML = '';
-    return;
+    if (idx >= moves.length && moves.length > 0) {
+      // 投了（最終局面）: 最後の手の評価値を使って表示する
+      move = moves[moves.length - 1];
+      headerEl.textContent = '投了 — 最終局面';
+    } else {
+      // idx < 0 または moves が空: 初期局面としてリセット
+      headerEl.textContent = '初期局面';
+      document.getElementById('bar-mizusho').style.width = '50%';
+      document.getElementById('winrate-mizusho').textContent = '—';
+      document.getElementById('bar-tanuki').style.width = '50%';
+      document.getElementById('winrate-tanuki').textContent = '—';
+      document.getElementById('bar-kristallweizen').style.width = '50%';
+      document.getElementById('winrate-kristallweizen').textContent = '—';
+      document.getElementById('bar-dlshogi').style.width = '50%';
+      document.getElementById('winrate-dlshogi').textContent = '—';
+      document.getElementById('divergence-line').textContent = '乖離: —';
+      document.getElementById('candidates-mizusho').innerHTML = '';
+      document.getElementById('candidates-tanuki').innerHTML = '';
+      document.getElementById('candidates-kristallweizen').innerHTML = '';
+      document.getElementById('candidates-dlshogi').innerHTML = '';
+      return;
+    }
+  } else {
+    headerEl.textContent = `${move.num}手目局面 — 次の候補手`;
   }
 
   const scoreToWinrate = s => Math.round(100 / (1 + Math.exp(-s / 600)) * 10) / 10;
@@ -681,9 +658,7 @@ function boardStep(d) {
   boardGoto(boardIdx + d);
 }
 
-// 初期描画
 renderBoard(0);
-
 
 const moves = [
   {
@@ -27394,8 +27369,7 @@ const moves = [
 ];
 
 const labels      = moves.map(m => m.num + "手");
-// 手番視点(side-to-move)の生スコアをそのままグラフ表示
-// 正=手番側有利 / 序盤は小さくジグザグ / 中終盤は先手優勢で安定上昇
+// JSONは先手視点に統一済み（正=先手有利 / 負=後手有利）
 const MATE_SCORE = 29000;
 const clipScore = v => {
   if (v === null || v === undefined) return null;
@@ -27413,8 +27387,6 @@ const divData = moves.map(m => {
   const d = Math.max(...vals) - Math.min(...vals);
   return Math.min(d, 3000);
 });
-// 先手視点変換(テーブル用)
-const toSente = (v) => v;  // JSON側で先手視点済み  // 符号はJSON側で先手視点に統一済み
 
 const chartCfg = {
   responsive: true,
@@ -27430,11 +27402,10 @@ const chartCfg = {
   }
 };
 
-// グラフクリック→盤面連動のハンドラ
 function onChartClick(e, elements) {
   if (elements.length > 0) {
     const idx = elements[0].index;
-    boardGoto(idx + 1);  // moves[0] = 1手目 → positions[1]
+    boardGoto(idx + 1);
   }
 }
 
@@ -27449,7 +27420,7 @@ function highlightMove(idx) {
   }
 }
 
-const evalChart = new Chart(document.getElementById("evalChart"), {
+new Chart(document.getElementById("evalChart"), {
   type: "line",
   data: { labels, datasets: [
     { label:"水匠5", data:mizushoData, borderColor:"#6aacdc", borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true },
@@ -27468,34 +27439,31 @@ new Chart(document.getElementById("divergenceChart"), {
   options: { ...chartCfg, onClick: onChartClick },
 });
 
-// 乖離Top5（先手視点の乖離で計算）
+// 乖離Top5
 const sorted = [...moves].filter(m => m["水匠5"] != null && m["tanuki"] != null)
-  .map(m => ({...m, _m: toSente(m["水匠5"], m.num), _t: toSente(m["tanuki"], m.num)}))
-  .sort((a,b) => Math.abs(b._t - b._m) - Math.abs(a._t - a._m)).slice(0,5);
+  .sort((a,b) => Math.abs(b["tanuki"]-b["水匠5"]) - Math.abs(a["tanuki"]-a["水匠5"])).slice(0,5);
 const keyTbody = document.getElementById("keyMoves");
 sorted.forEach(m => {
-  const d = m._t - m._m;
+  const d = m["tanuki"] - m["水匠5"];
   keyTbody.innerHTML += `<tr>
     <td class="move-num">${m.num}</td>
     <td class="move-jp">${m.move_jp}</td>
-    <td class="val-pos">${m._m >= 0 ? "+" : ""}${m._m}</td>
-    <td class="val-pos">${m._t >= 0 ? "+" : ""}${m._t}</td>
+    <td class="val-pos">${m["水匠5"] >= 0 ? "+" : ""}${m["水匠5"]}</td>
+    <td class="val-pos">${m["tanuki"] >= 0 ? "+" : ""}${m["tanuki"]}</td>
     <td style="color:var(--accent-gold);font-weight:500">${d >= 0 ? "+" : ""}${d}</td>
     <td style="color:var(--text-muted);font-size:0.7rem">${Math.abs(d) > 100 ? "霧の核心" : Math.abs(d) > 50 ? "要注目" : ""}</td>
   </tr>`;
 });
 
-// 全手テーブル（先手視点で表示）
+// 全手テーブル
 const allTbody = document.getElementById("allMoves");
 moves.forEach(m => {
-  const sm = toSente(m["水匠5"], m.num);
-  const st = toSente(m["tanuki"], m.num);
-  const d = (sm != null && st != null) ? st - sm : null;
+  const d = (m["水匠5"] != null && m["tanuki"] != null) ? m["tanuki"] - m["水匠5"] : null;
   allTbody.innerHTML += `<tr>
     <td class="move-num">${m.num}</td>
     <td class="move-jp">${m.move_jp}</td>
-    <td class="val-pos">${sm != null ? (sm >= 0 ? "+" : "") + sm : "—"}</td>
-    <td class="val-pos">${st != null ? (st >= 0 ? "+" : "") + st : "—"}</td>
+    <td class="val-pos">${m["水匠5"] != null ? (m["水匠5"] >= 0 ? "+" : "") + m["水匠5"] : "—"}</td>
+    <td class="val-pos">${m["tanuki"] != null ? (m["tanuki"] >= 0 ? "+" : "") + m["tanuki"] : "—"}</td>
     <td style="color:${d != null && Math.abs(d) > 80 ? "var(--accent-gold)" : "var(--text-secondary)"}">${d != null ? (d >= 0 ? "+" : "") + d : "—"}</td>
     <td style="color:var(--text-muted)">${m.winrate}%</td>
   </tr>`;

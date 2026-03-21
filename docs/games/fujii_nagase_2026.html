@@ -540,28 +540,34 @@ function renderBoard(idx) {
 
 function updateCandidates(idx) {
   const headerEl = document.getElementById('cand-header-bar');
-  const move = moves[idx];
-  if (move) {
-    headerEl.textContent = `${move.num}手目局面 — 次の候補手`;
-  } else {
-    headerEl.textContent = idx >= moves.length ? '最終局面' : '初期局面';
-  }
+  let move = moves[idx];
 
+  // idx が範囲外の場合の処理
   if (!move) {
-    document.getElementById('bar-mizusho').style.width = '50%';
-    document.getElementById('winrate-mizusho').textContent = '—';
-    document.getElementById('bar-tanuki').style.width = '50%';
-    document.getElementById('winrate-tanuki').textContent = '—';
-    document.getElementById('bar-kristallweizen').style.width = '50%';
-    document.getElementById('winrate-kristallweizen').textContent = '—';
-    document.getElementById('bar-dlshogi').style.width = '50%';
-    document.getElementById('winrate-dlshogi').textContent = '—';
-    document.getElementById('divergence-line').textContent = '乖離: —';
-    document.getElementById('candidates-mizusho').innerHTML = '';
-    document.getElementById('candidates-tanuki').innerHTML = '';
-    document.getElementById('candidates-kristallweizen').innerHTML = '';
-    document.getElementById('candidates-dlshogi').innerHTML = '';
-    return;
+    if (idx >= moves.length && moves.length > 0) {
+      // 投了（最終局面）: 最後の手の評価値を使って表示する
+      move = moves[moves.length - 1];
+      headerEl.textContent = '投了 — 最終局面';
+    } else {
+      // idx < 0 または moves が空: 初期局面としてリセット
+      headerEl.textContent = '初期局面';
+      document.getElementById('bar-mizusho').style.width = '50%';
+      document.getElementById('winrate-mizusho').textContent = '—';
+      document.getElementById('bar-tanuki').style.width = '50%';
+      document.getElementById('winrate-tanuki').textContent = '—';
+      document.getElementById('bar-kristallweizen').style.width = '50%';
+      document.getElementById('winrate-kristallweizen').textContent = '—';
+      document.getElementById('bar-dlshogi').style.width = '50%';
+      document.getElementById('winrate-dlshogi').textContent = '—';
+      document.getElementById('divergence-line').textContent = '乖離: —';
+      document.getElementById('candidates-mizusho').innerHTML = '';
+      document.getElementById('candidates-tanuki').innerHTML = '';
+      document.getElementById('candidates-kristallweizen').innerHTML = '';
+      document.getElementById('candidates-dlshogi').innerHTML = '';
+      return;
+    }
+  } else {
+    headerEl.textContent = `${move.num}手目局面 — 次の候補手`;
   }
 
   const scoreToWinrate = s => Math.round(100 / (1 + Math.exp(-s / 600)) * 10) / 10;
