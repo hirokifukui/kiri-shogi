@@ -262,6 +262,7 @@ function parseKifMove(line, board) {
     const col = 9 - ZEN_NUM[drop[1]];
     const row = KANJI_NUM[drop[2]] - 1;
     const piece = drop[3];
+    parseKifMove._lastTo = {r:row, c:col};
     return {to:{r:row,c:col}, drop:true, piece:KOMA_MAP[piece]||1};
   }
 
