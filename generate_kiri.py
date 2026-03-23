@@ -328,7 +328,7 @@ def topnav(breadcrumbs: list[tuple[str, str]] | None = None) -> str:
     return f"""\
 <nav class="topnav">
   <div>
-    <a href="index.html" class="topnav-logo">Kiri</a>
+    <a href="../index.html" class="topnav-logo">Kiri</a>
     <span class="topnav-sub">AI対戦ビューア</span>
   </div>
   {bc}
