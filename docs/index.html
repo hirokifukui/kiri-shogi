@@ -18,6 +18,7 @@
   </a>
   <ul class="nav-links">
     <li><a href="#games">Games</a></li>
+    <li><a href="kiri_games/index.html">AI対戦</a></li>
     <li><a href="#archive">Archive</a></li>
     <li><a href="#about">About</a></li>
   </ul>
@@ -86,6 +87,15 @@
     </div>
     <a href="#" class="view-all">すべて見る →</a>
   </div>
+
+  <!-- TABS -->
+  <div class="games-tabs">
+    <button class="games-tab active" data-tab="analysis">棋譜解析</button>
+    <button class="games-tab" data-tab="ai-battle">AI対戦</button>
+  </div>
+
+  <!-- TAB: 棋譜解析 -->
+  <div class="tab-panel active" id="tab-analysis">
   <div class="games-grid">
 <!-- GAMES-GRID-START -->
     <a href="games/ensemble_max_d12_20260322_211451_game1.html" class="game-card">
@@ -158,17 +168,17 @@
             <div class="engine-bar-track">
               <div class="engine-bar-fill mizusho" style="width:14%"></div>
             </div>
-            <span class="engine-val">-1093</span>
+            <span class="engine-val">-1081</span>
           </div>
           <div class="engine-bar-row">
             <span class="engine-name">tanuki</span>
             <div class="engine-bar-track">
-              <div class="engine-bar-fill tanuki" style="width:16%"></div>
+              <div class="engine-bar-fill tanuki" style="width:19%"></div>
             </div>
-            <span class="engine-val">-1014</span>
+            <span class="engine-val">-881</span>
           </div>
         </div>
-        <div class="divergence-badge">△ 乖離 max -400 (31手目)</div>
+        <div class="divergence-badge">△ 乖離 max -409 (63手目)</div>
       </div>
     </a>
 
@@ -196,7 +206,7 @@
             <span class="engine-val">-30000</span>
           </div>
         </div>
-        <div class="divergence-badge">△ 乖離 max -2136 (78手目)</div>
+        <div class="divergence-badge">△ 乖離 max -1959 (78手目)</div>
       </div>
     </a>
 
@@ -453,7 +463,33 @@
     </a>
     <!-- GAMES-GRID-END -->
   </div>
+  </div><!-- /tab-analysis -->
+
+  <!-- TAB: AI対戦 -->
+  <div class="tab-panel" id="tab-ai-battle">
+    <a href="kiri_games/index.html" class="ai-battle-card">
+      <div class="ai-battle-card-icon">⚔</div>
+      <div class="ai-battle-card-body">
+        <p class="ai-battle-card-title">AI Battle Viewer</p>
+        <p class="ai-battle-card-title-jp">AI対戦ビューア</p>
+        <p class="ai-battle-card-desc">水匠5・tanuki・Kristallweizen・dlshogiの4エンジン評価値を並列表示。NNUE vs DL の乖離局面をハイライトする。</p>
+        <span class="ai-battle-card-link">対戦ログを見る →</span>
+      </div>
+    </a>
+  </div><!-- /tab-ai-battle -->
+
 </section>
+
+<script>
+document.querySelectorAll('.games-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.games-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+</script>
 
 <!-- ABOUT STRIP -->
 <div class="about-strip" id="about">

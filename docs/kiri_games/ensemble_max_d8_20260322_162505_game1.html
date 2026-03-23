@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiri — ensemble_max_d8_20260322_162505_game1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg: #111010;
+  --bg-card: #1a1918;
+  --bg-card-hover: #222020;
+  --border: rgba(255,255,255,0.07);
+  --text-primary: #e8e4dc;
+  --text-secondary: #9a9490;
+  --text-muted: #5a5652;
+  --accent-gold: #c8a96e;
+  --accent-gold-dim: rgba(200,169,110,0.15);
+  --engine-mizusho: #6aacdc;
+  --engine-tanuki: #dc8a6a;
+  --engine-kristall: #8adc9a;
+  --engine-dlshogi: #c88adc;
+  --font-serif-en: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  --font-serif-jp: 'Yu Mincho', 'YuMincho', '游明朝', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-serif-jp);
+  font-size: 16px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent-gold); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---- NAV ---- */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem; height: 56px;
+  background: rgba(17,16,16,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.topnav-logo {
+  font-family: var(--font-serif-en);
+  font-size: 1.3rem; font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--accent-gold);
+  text-decoration: none;
+}
+.topnav-logo:hover { text-decoration: none; }
+.topnav-sub {
+  font-size: 0.72rem; color: var(--text-muted);
+  letter-spacing: 0.12em;
+}
+.breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 0.7rem; color: var(--text-secondary);
+  letter-spacing: 0.06em;
+}
+.breadcrumb a { color: var(--text-secondary); }
+.breadcrumb a:hover { color: var(--accent-gold); }
+
+/* ---- CONTAINER ---- */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ---- PAGE HEADER ---- */
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.page-header h1 {
+  font-family: var(--font-serif-en);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+}
+.page-header .subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+}
+
+/* ---- SUMMARY CARDS ---- */
+.summary-row {
+  display: flex; flex-wrap: wrap; gap: 0.8rem;
+  margin-bottom: 2rem;
+}
+.summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 0.8rem 1.2rem;
+  flex: 1 1 120px;
+  min-width: 100px;
+}
+.summary-card .label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+.summary-card .value {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+.summary-card .value.win { color: #6adc8a; }
+.summary-card .value.loss { color: #dc6a6a; }
+.summary-card .value.draw { color: var(--text-secondary); }
+
+/* ---- SECTION ---- */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+/* ---- TABLE ---- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  margin-bottom: 2rem;
+}
+.data-table th {
+  text-align: left;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  vertical-align: top;
+}
+.data-table tr:hover td {
+  background: var(--bg-card-hover);
+}
+.data-table .num { text-align: right; }
+
+/* Game list specific */
+.game-link { color: var(--text-primary); }
+.game-link:hover { color: var(--accent-gold); }
+
+/* ---- DIVERGENCE HIGHLIGHT ---- */
+.row-divergent td {
+  background: rgba(220,106,106,0.08);
+}
+.row-divergent:hover td {
+  background: rgba(220,106,106,0.14);
+}
+.div-high {
+  color: #dc6a6a;
+  font-weight: 600;
+}
+
+/* ---- ENGINE DETAIL (expandable) ---- */
+.engine-detail {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+}
+.engine-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.2rem 0;
+}
+.engine-name {
+  width: 90px;
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+.engine-score {
+  width: 60px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.engine-move {
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+}
+
+/* ---- CLICKABLE ROW ---- */
+.clickable { cursor: pointer; }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 640px) {
+  .topnav { padding: 0 1rem; }
+  .container { padding: 1.2rem 0.8rem 3rem; }
+  .summary-card { flex: 1 1 100%; }
+  .data-table { font-size: 0.7rem; }
+  .data-table th, .data-table td { padding: 0.35rem 0.4rem; }
+  .engine-detail { font-size: 0.65rem; }
+  .engine-name { width: 70px; }
+}
+
+.highlight-section {
+  margin-bottom: 2.5rem;
+  padding: 1.2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+.highlight-section h3 {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+  </style>
+</head>
+<body>
+<nav class="topnav">
+  <div>
+    <a href="index.html" class="topnav-logo">Kiri</a>
+    <span class="topnav-sub">AI対戦ビューア</span>
+  </div>
+  <span class="breadcrumb"><a href="../index.html">Kiri</a> / <a href="index.html">AI対戦</a> / ensemble_max_d8_20260322_162505_game1</span>
+</nav>
+<div class="container">
+<div class="page-header">
+  <h1>ensemble_max_d8_20260322_162505_game1</h1>
+  <p class="subtitle">2026-03-22 16:25</p>
+</div>
+<div class="summary-row">
+  <div class="summary-card">
+    <div class="label">RESULT</div>
+    <div class="value win">勝ち</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">MOVES</div>
+    <div class="value">91</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">STRATEGY</div>
+    <div class="value">max</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">DEPTH</div>
+    <div class="value">8</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">乖離局面</div>
+    <div class="value div-high">6</div>
+  </div>
+</div>
+<div class="highlight-section">
+  <h3>Divergence Highlights (≥ 500cp)</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th class="num">手数</th>
+        <th class="num">乖離 (cp)</th>
+        <th>採用手</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr class="clickable" onclick="document.getElementById('move-25').scrollIntoView({behavior:'smooth',block:'center'})">
+      <td class="num">25</td>
+      <td class="num div-high">546</td>
+      <td>3i2h</td>
+    </tr>    <tr class="clickable" onclick="document.getElementById('move-77').scrollIntoView({behavior:'smooth',block:'center'})">
+      <td class="num">77</td>
+      <td class="num div-high">550</td>
+      <td>6f5e</td>
+    </tr>    <tr class="clickable" onclick="document.getElementById('move-79').scrollIntoView({behavior:'smooth',block:'center'})">
+      <td class="num">79</td>
+      <td class="num div-high">555</td>
+      <td>8g9h</td>
+    </tr>    <tr class="clickable" onclick="document.getElementById('move-81').scrollIntoView({behavior:'smooth',block:'center'})">
+      <td class="num">81</td>
+      <td class="num div-high">519</td>
+      <td>9h8g</td>
+    </tr>    <tr class="clickable" onclick="document.getElementById('move-89').scrollIntoView({behavior:'smooth',block:'center'})">
+      <td class="num">89</td>
+      <td class="num div-high">1718</td>
+      <td>5e7e</td>
+    </tr>    <tr class="clickable" onclick="document.getElementById('move-91').scrollIntoView({behavior:'smooth',block:'center'})">
+      <td class="num">91</td>
+      <td class="num div-high">2571</td>
+      <td>8h7h</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<p class="section-label">全局面</p>
+<table class="data-table">
+  <thead>
+    <tr>
+      <th class="num">手数</th>
+      <th>採用手</th>
+      <th class="num">NNUE平均</th>
+      <th class="num">DL Score</th>
+      <th class="num">乖離</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="move-1">
+      <td class="num">1</td>
+      <td>2g2f</td>
+      <td class="num">+54</td>
+      <td class="num">+43</td>
+      <td class="num">11</td>
+    </tr>    <tr id="move-3">
+      <td class="num">3</td>
+      <td>7g7f</td>
+      <td class="num">+91</td>
+      <td class="num">+57</td>
+      <td class="num">34</td>
+    </tr>    <tr id="move-5">
+      <td class="num">5</td>
+      <td>2f2e</td>
+      <td class="num">+117</td>
+      <td class="num">+63</td>
+      <td class="num">54</td>
+    </tr>    <tr id="move-7">
+      <td class="num">7</td>
+      <td>6i7h</td>
+      <td class="num">+115</td>
+      <td class="num">+63</td>
+      <td class="num">52</td>
+    </tr>    <tr id="move-9">
+      <td class="num">9</td>
+      <td>2e2d</td>
+      <td class="num">+102</td>
+      <td class="num">+92</td>
+      <td class="num">10</td>
+    </tr>    <tr id="move-11">
+      <td class="num">11</td>
+      <td>2h2d</td>
+      <td class="num">+91</td>
+      <td class="num">+86</td>
+      <td class="num">5</td>
+    </tr>    <tr id="move-13">
+      <td class="num">13</td>
+      <td>8g8f</td>
+      <td class="num">+92</td>
+      <td class="num">+74</td>
+      <td class="num">18</td>
+    </tr>    <tr id="move-15">
+      <td class="num">15</td>
+      <td>2d3d</td>
+      <td class="num">+119</td>
+      <td class="num">+103</td>
+      <td class="num">16</td>
+    </tr>    <tr id="move-17">
+      <td class="num">17</td>
+      <td>7i8h</td>
+      <td class="num">+190</td>
+      <td class="num">+154</td>
+      <td class="num">36</td>
+    </tr>    <tr id="move-19">
+      <td class="num">19</td>
+      <td>B*7g</td>
+      <td class="num">+288</td>
+      <td class="num">+168</td>
+      <td class="num">120</td>
+    </tr>    <tr id="move-21">
+      <td class="num">21</td>
+      <td>8h8g</td>
+      <td class="num">+298</td>
+      <td class="num">+70</td>
+      <td class="num">228</td>
+    </tr>    <tr id="move-23">
+      <td class="num">23</td>
+      <td>8i7g</td>
+      <td class="num">+349</td>
+      <td class="num">+101</td>
+      <td class="num">248</td>
+    </tr>    <tr id="move-25" class="row-divergent">
+      <td class="num">25</td>
+      <td>3i2h</td>
+      <td class="num">+650</td>
+      <td class="num">+104</td>
+      <td class="num"><span class="div-high">546</span></td>
+    </tr>
+      <tr class="row-divergent"><td colspan="5"><div class="engine-detail"><div class="engine-row"><span class="engine-name" style="color:#6aacdc">水匠5</span><span class="engine-score" style="color:#6aacdc">+863</span><span class="engine-move">3i2h (d=10)</span></div><div class="engine-row"><span class="engine-name" style="color:#dc8a6a">tanuki</span><span class="engine-score" style="color:#dc8a6a">+713</span><span class="engine-move">3i2h (d=9)</span></div><div class="engine-row"><span class="engine-name" style="color:#8adc9a">Kristallweizen</span><span class="engine-score" style="color:#8adc9a">+375</span><span class="engine-move">3i2h (d=12)</span></div><div class="engine-row"><span class="engine-name" style="color:#c88adc">dlshogi</span><span class="engine-score" style="color:#c88adc">+104</span><span class="engine-move">3i2h</span></div></div></td></tr>    <tr id="move-27">
+      <td class="num">27</td>
+      <td>3d8d</td>
+      <td class="num">+446</td>
+      <td class="num">+166</td>
+      <td class="num">280</td>
+    </tr>    <tr id="move-29">
+      <td class="num">29</td>
+      <td>8d8a+</td>
+      <td class="num">+360</td>
+      <td class="num">+181</td>
+      <td class="num">179</td>
+    </tr>    <tr id="move-31">
+      <td class="num">31</td>
+      <td>4i5h</td>
+      <td class="num">+356</td>
+      <td class="num">+181</td>
+      <td class="num">175</td>
+    </tr>    <tr id="move-33">
+      <td class="num">33</td>
+      <td>N*2d</td>
+      <td class="num">+284</td>
+      <td class="num">+97</td>
+      <td class="num">187</td>
+    </tr>    <tr id="move-35">
+      <td class="num">35</td>
+      <td>5h6h</td>
+      <td class="num">+67</td>
+      <td class="num">+112</td>
+      <td class="num">45</td>
+    </tr>    <tr id="move-37">
+      <td class="num">37</td>
+      <td>R*3f</td>
+      <td class="num">+134</td>
+      <td class="num">-84</td>
+      <td class="num">218</td>
+    </tr>    <tr id="move-39">
+      <td class="num">39</td>
+      <td>3f4f</td>
+      <td class="num">+9</td>
+      <td class="num">-79</td>
+      <td class="num">88</td>
+    </tr>    <tr id="move-41">
+      <td class="num">41</td>
+      <td>4f4e</td>
+      <td class="num">-50</td>
+      <td class="num">-88</td>
+      <td class="num">38</td>
+    </tr>    <tr id="move-43">
+      <td class="num">43</td>
+      <td>P*4h</td>
+      <td class="num">-174</td>
+      <td class="num">-48</td>
+      <td class="num">126</td>
+    </tr>    <tr id="move-45">
+      <td class="num">45</td>
+      <td>4e8e</td>
+      <td class="num">+233</td>
+      <td class="num">+109</td>
+      <td class="num">124</td>
+    </tr>    <tr id="move-47">
+      <td class="num">47</td>
+      <td>P*3h</td>
+      <td class="num">+491</td>
+      <td class="num">+264</td>
+      <td class="num">227</td>
+    </tr>    <tr id="move-49">
+      <td class="num">49</td>
+      <td>8a9a</td>
+      <td class="num">+655</td>
+      <td class="num">+640</td>
+      <td class="num">15</td>
+    </tr>    <tr id="move-51">
+      <td class="num">51</td>
+      <td>L*3g</td>
+      <td class="num">+1087</td>
+      <td class="num">+601</td>
+      <td class="num">486</td>
+    </tr>    <tr id="move-53">
+      <td class="num">53</td>
+      <td>P*2e</td>
+      <td class="num">+477</td>
+      <td class="num">+590</td>
+      <td class="num">113</td>
+    </tr>    <tr id="move-55">
+      <td class="num">55</td>
+      <td>N*5f</td>
+      <td class="num">+362</td>
+      <td class="num">+457</td>
+      <td class="num">95</td>
+    </tr>    <tr id="move-57">
+      <td class="num">57</td>
+      <td>8e8a+</td>
+      <td class="num">+367</td>
+      <td class="num">+560</td>
+      <td class="num">193</td>
+    </tr>    <tr id="move-59">
+      <td class="num">59</td>
+      <td>N*5h</td>
+      <td class="num">+342</td>
+      <td class="num">+446</td>
+      <td class="num">104</td>
+    </tr>    <tr id="move-61">
+      <td class="num">61</td>
+      <td>6h5h</td>
+      <td class="num">+10</td>
+      <td class="num">+403</td>
+      <td class="num">393</td>
+    </tr>    <tr id="move-63">
+      <td class="num">63</td>
+      <td>4h4g</td>
+      <td class="num">-25</td>
+      <td class="num">+305</td>
+      <td class="num">330</td>
+    </tr>    <tr id="move-65">
+      <td class="num">65</td>
+      <td>5i5h</td>
+      <td class="num">+551</td>
+      <td class="num">+466</td>
+      <td class="num">85</td>
+    </tr>    <tr id="move-67">
+      <td class="num">67</td>
+      <td>5h6h</td>
+      <td class="num">+771</td>
+      <td class="num">+653</td>
+      <td class="num">118</td>
+    </tr>    <tr id="move-69">
+      <td class="num">69</td>
+      <td>6h7i</td>
+      <td class="num">+859</td>
+      <td class="num">+622</td>
+      <td class="num">237</td>
+    </tr>    <tr id="move-71">
+      <td class="num">71</td>
+      <td>7i8h</td>
+      <td class="num">+1017</td>
+      <td class="num">+713</td>
+      <td class="num">304</td>
+    </tr>    <tr id="move-73">
+      <td class="num">73</td>
+      <td>8a8f</td>
+      <td class="num">+641</td>
+      <td class="num">+679</td>
+      <td class="num">38</td>
+    </tr>    <tr id="move-75">
+      <td class="num">75</td>
+      <td>8f6f</td>
+      <td class="num">+445</td>
+      <td class="num">+650</td>
+      <td class="num">205</td>
+    </tr>    <tr id="move-77" class="row-divergent">
+      <td class="num">77</td>
+      <td>6f5e</td>
+      <td class="num">+187</td>
+      <td class="num">+737</td>
+      <td class="num"><span class="div-high">550</span></td>
+    </tr>
+      <tr class="row-divergent"><td colspan="5"><div class="engine-detail"><div class="engine-row"><span class="engine-name" style="color:#6aacdc">水匠5</span><span class="engine-score" style="color:#6aacdc">+10</span><span class="engine-move">P*4d (d=9)</span></div><div class="engine-row"><span class="engine-name" style="color:#dc8a6a">tanuki</span><span class="engine-score" style="color:#dc8a6a">+311</span><span class="engine-move">6f5e (d=9)</span></div><div class="engine-row"><span class="engine-name" style="color:#8adc9a">Kristallweizen</span><span class="engine-score" style="color:#8adc9a">+240</span><span class="engine-move">6f5e (d=10)</span></div><div class="engine-row"><span class="engine-name" style="color:#c88adc">dlshogi</span><span class="engine-score" style="color:#c88adc">+737</span><span class="engine-move">6f5e</span></div></div></td></tr>    <tr id="move-79" class="row-divergent">
+      <td class="num">79</td>
+      <td>8g9h</td>
+      <td class="num">+484</td>
+      <td class="num">+1039</td>
+      <td class="num"><span class="div-high">555</span></td>
+    </tr>
+      <tr class="row-divergent"><td colspan="5"><div class="engine-detail"><div class="engine-row"><span class="engine-name" style="color:#6aacdc">水匠5</span><span class="engine-score" style="color:#6aacdc">+298</span><span class="engine-move">8g9h (d=10)</span></div><div class="engine-row"><span class="engine-name" style="color:#dc8a6a">tanuki</span><span class="engine-score" style="color:#dc8a6a">+544</span><span class="engine-move">8g9h (d=9)</span></div><div class="engine-row"><span class="engine-name" style="color:#8adc9a">Kristallweizen</span><span class="engine-score" style="color:#8adc9a">+612</span><span class="engine-move">8g9h (d=9)</span></div><div class="engine-row"><span class="engine-name" style="color:#c88adc">dlshogi</span><span class="engine-score" style="color:#c88adc">+1039</span><span class="engine-move">8g9h</span></div></div></td></tr>    <tr id="move-81" class="row-divergent">
+      <td class="num">81</td>
+      <td>9h8g</td>
+      <td class="num">+1237</td>
+      <td class="num">+718</td>
+      <td class="num"><span class="div-high">519</span></td>
+    </tr>
+      <tr class="row-divergent"><td colspan="5"><div class="engine-detail"><div class="engine-row"><span class="engine-name" style="color:#6aacdc">水匠5</span><span class="engine-score" style="color:#6aacdc">+643</span><span class="engine-move">9h8g (d=15)</span></div><div class="engine-row"><span class="engine-name" style="color:#dc8a6a">tanuki</span><span class="engine-score" style="color:#dc8a6a">+2073</span><span class="engine-move">9h8g (d=13)</span></div><div class="engine-row"><span class="engine-name" style="color:#8adc9a">Kristallweizen</span><span class="engine-score" style="color:#8adc9a">+997</span><span class="engine-move">9h8g (d=10)</span></div><div class="engine-row"><span class="engine-name" style="color:#c88adc">dlshogi</span><span class="engine-score" style="color:#c88adc">+718</span><span class="engine-move">9h8g</span></div></div></td></tr>    <tr id="move-83">
+      <td class="num">83</td>
+      <td>8g9h</td>
+      <td class="num">+705</td>
+      <td class="num">+1025</td>
+      <td class="num">320</td>
+    </tr>    <tr id="move-85">
+      <td class="num">85</td>
+      <td>N*4e</td>
+      <td class="num">+936</td>
+      <td class="num">+1304</td>
+      <td class="num">368</td>
+    </tr>    <tr id="move-87">
+      <td class="num">87</td>
+      <td>4e5c+</td>
+      <td class="num">+1296</td>
+      <td class="num">+1282</td>
+      <td class="num">14</td>
+    </tr>    <tr id="move-89" class="row-divergent">
+      <td class="num">89</td>
+      <td>5e7e</td>
+      <td class="num">+2993</td>
+      <td class="num">+1275</td>
+      <td class="num"><span class="div-high">1718</span></td>
+    </tr>
+      <tr class="row-divergent"><td colspan="5"><div class="engine-detail"><div class="engine-row"><span class="engine-name" style="color:#6aacdc">水匠5</span><span class="engine-score" style="color:#6aacdc">+3885</span><span class="engine-move">5e7e (d=13)</span></div><div class="engine-row"><span class="engine-name" style="color:#dc8a6a">tanuki</span><span class="engine-score" style="color:#dc8a6a">+3253</span><span class="engine-move">5e7e (d=12)</span></div><div class="engine-row"><span class="engine-name" style="color:#8adc9a">Kristallweizen</span><span class="engine-score" style="color:#8adc9a">+1841</span><span class="engine-move">7h7i (d=10)</span></div><div class="engine-row"><span class="engine-name" style="color:#c88adc">dlshogi</span><span class="engine-score" style="color:#c88adc">+1275</span><span class="engine-move">P*8d</span></div></div></td></tr>    <tr id="move-91" class="row-divergent">
+      <td class="num">91</td>
+      <td>8h7h</td>
+      <td class="num">+4315</td>
+      <td class="num">+1744</td>
+      <td class="num"><span class="div-high">2571</span></td>
+    </tr>
+      <tr class="row-divergent"><td colspan="5"><div class="engine-detail"><div class="engine-row"><span class="engine-name" style="color:#6aacdc">水匠5</span><span class="engine-score" style="color:#6aacdc">+6047</span><span class="engine-move">8h7h (d=9)</span></div><div class="engine-row"><span class="engine-name" style="color:#dc8a6a">tanuki</span><span class="engine-score" style="color:#dc8a6a">+3198</span><span class="engine-move">8h7h (d=9)</span></div><div class="engine-row"><span class="engine-name" style="color:#8adc9a">Kristallweizen</span><span class="engine-score" style="color:#8adc9a">+3702</span><span class="engine-move">8h7h (d=11)</span></div><div class="engine-row"><span class="engine-name" style="color:#c88adc">dlshogi</span><span class="engine-score" style="color:#c88adc">+1744</span><span class="engine-move">8h7h</span></div></div></td></tr>
+  </tbody>
+</table>
+</div>
+</body>
+</html>

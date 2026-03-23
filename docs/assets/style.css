@@ -429,6 +429,113 @@ section {
   border: 1px solid rgba(200,169,110,0.2);
 }
 
+/* ---- GAMES TABS ---- */
+.games-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.games-tab {
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.games-tab:hover {
+  color: var(--text-secondary);
+}
+
+.games-tab.active {
+  color: var(--accent-gold);
+  border-bottom-color: var(--accent-gold);
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+/* ---- AI BATTLE CARD ---- */
+.ai-battle-card {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 2.5rem 2rem;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.ai-battle-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(200,169,110,0.3);
+  text-decoration: none;
+}
+
+.ai-battle-card-icon {
+  font-size: 2.5rem;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.ai-battle-card-title {
+  font-family: var(--font-serif-en);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.2rem;
+}
+
+.ai-battle-card-title-jp {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  margin-bottom: 0.8rem;
+}
+
+.ai-battle-card-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  margin-bottom: 1rem;
+}
+
+.ai-battle-card-link {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--accent-gold);
+  border-bottom: 1px solid rgba(200,169,110,0.3);
+  padding-bottom: 2px;
+}
+
+.ai-battle-card:hover .ai-battle-card-link {
+  border-color: var(--accent-gold);
+}
+
+@media (max-width: 768px) {
+  .ai-battle-card {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+    padding: 2rem 1.5rem;
+  }
+}
+
 /* ---- ABOUT STRIP ---- */
 .about-strip {
   border-top: 1px solid var(--border);
