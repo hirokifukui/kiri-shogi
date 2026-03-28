@@ -18,9 +18,10 @@
   --accent-gold: #c8a96e;
   --accent-gold-dim: rgba(200,169,110,0.15);
   --engine-mizusho: #6aacdc;
-  --engine-tanuki: #dc8a6a;
-  --engine-kristall: #8adc9a;
-  --engine-dlshogi: #c88adc;
+  --engine-hao: #dc8a6a;
+  --engine-shinden: #8adc9a;
+  --engine-fka: #c88adc;
+  --engine-fkb: #dca88a;
   --font-serif-en: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
   --font-serif-jp: 'Yu Mincho', 'YuMincho', '游明朝', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
@@ -432,15 +433,13 @@ a:hover { text-decoration: underline; }
         <tr>
           <th class="num">#</th>
           <th>採用手</th>
-          <th class="num" style="color:var(--engine-mizusho)">水匠</th>
-          <th class="num" style="color:var(--engine-tanuki)">tanuki</th>
-          <th class="num" style="color:var(--engine-kristall)">Krist</th>
-          <th class="num" style="color:var(--engine-dlshogi)">dl</th>
+          <th class="num" style="color:#6aacdc">水匠</th><th class="num" style="color:#dc8a6a">Háo</th><th class="num" style="color:#8adc9a">振電</th><th class="num" style="color:#c88adc">fkA</th><th class="num" style="color:#dca88a">fkB</th>
+          <th class="num">判定</th>
           <th class="num">乖離</th>
         </tr>
       </thead>
       <tbody>
-<tr id="move-1" class="clickable" onclick="goTo(posToView(0))"><td class="num">1</td><td class="move-jp" data-idx="0">2g2f</td><td class="num" style="color:#6aacdc">-80<div class="eng-bm" data-idx="0" data-usi="2g2f">2g2f</div></td><td class="num" style="color:#dc8a6a">-54<div class="eng-bm" data-idx="0" data-usi="2g2f">2g2f</div></td><td class="num" style="color:#8adc9a">-37<div class="eng-bm" data-idx="0" data-usi="2g2f">2g2f</div></td><td class="num" style="color:#c88adc">+57<div class="eng-bm" data-idx="0" data-usi="2g2f">2g2f</div></td><td class="num">114</td></tr><tr id="move-2" class="clickable" onclick="goTo(posToView(1))"><td class="num">2</td><td class="move-jp" data-idx="1">8c8d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-3" class="clickable" onclick="goTo(posToView(2))"><td class="num">3</td><td class="move-jp" data-idx="2">2f2e</td><td class="num" style="color:#6aacdc">-81<div class="eng-bm" data-idx="2" data-usi="2g2f">2g2f</div></td><td class="num" style="color:#dc8a6a">-50<div class="eng-bm" data-idx="2" data-usi="7g7f">7g7f</div></td><td class="num" style="color:#8adc9a">-37<div class="eng-bm" data-idx="2" data-usi="2g2f">2g2f</div></td><td class="num" style="color:#c88adc">+68<div class="eng-bm" data-idx="2" data-usi="2f2e">2f2e</div></td><td class="num">124</td></tr>
+<tr id="move-1" class="clickable" onclick="goTo(posToView(0))"><td class="num">1</td><td class="move-jp" data-idx="0">2g2f</td><td class="num" style="color:#6aacdc">-80<div class="eng-bm" data-idx="0" data-usi="2g2f">2g2f</div></td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">114</td></tr><tr id="move-2" class="clickable" onclick="goTo(posToView(1))"><td class="num">2</td><td class="move-jp" data-idx="1">8c8d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-3" class="clickable" onclick="goTo(posToView(2))"><td class="num">3</td><td class="move-jp" data-idx="2">2f2e</td><td class="num" style="color:#6aacdc">-81<div class="eng-bm" data-idx="2" data-usi="2g2f">2g2f</div></td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">124</td></tr>
       </tbody>
     </table>
   </div>
@@ -459,7 +458,7 @@ a:hover { text-decoration: underline; }
 // =====================================================================
 // Data
 // =====================================================================
-const positions = [{"move_number": 1, "sfen": "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1", "selected_move": "2g2f", "nnue_mean": -57, "dl_score": 57, "divergence": 114, "engine_results": {"Kristallweizen": {"score": -37, "best_move": "2g2f"}, "tanuki": {"score": -54, "best_move": "2g2f"}, "dlshogi": {"score": 57, "best_move": "2g2f"}, "水匠5": {"score": -80, "best_move": "2g2f"}}, "is_opponent": false}, {"move_number": 2, "sfen": "lnsgkgsnl/1r5b1/ppppppppp/9/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL w - 2", "selected_move": "8c8d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 3, "sfen": "lnsgkgsnl/1r5b1/p1ppppppp/1p7/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL b - 3", "selected_move": "2f2e", "nnue_mean": -56, "dl_score": 68, "divergence": 124, "engine_results": {"Kristallweizen": {"score": -37, "best_move": "2g2f"}, "水匠5": {"score": -81, "best_move": "2g2f"}, "tanuki": {"score": -50, "best_move": "7g7f"}, "dlshogi": {"score": 68, "best_move": "2f2e"}}, "is_opponent": false}];
+const positions = [{"move_number": 1, "sfen": "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1", "selected_move": "2g2f", "nnue_mean": -57, "dl_score": 57, "divergence": 114, "engine_results": {"Kristallweizen": {"score": -37, "best_move": "2g2f"}, "tanuki": {"score": -54, "best_move": "2g2f"}, "dlshogi": {"score": 57, "best_move": "2g2f"}, "水匠5": {"score": -80, "best_move": "2g2f"}}, "is_opponent": false, "borda_detail": null}, {"move_number": 2, "sfen": "lnsgkgsnl/1r5b1/ppppppppp/9/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL w - 2", "selected_move": "8c8d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true, "borda_detail": null}, {"move_number": 3, "sfen": "lnsgkgsnl/1r5b1/p1ppppppp/1p7/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL b - 3", "selected_move": "2f2e", "nnue_mean": -56, "dl_score": 68, "divergence": 124, "engine_results": {"Kristallweizen": {"score": -37, "best_move": "2g2f"}, "水匠5": {"score": -81, "best_move": "2g2f"}, "tanuki": {"score": -50, "best_move": "7g7f"}, "dlshogi": {"score": 68, "best_move": "2f2e"}}, "is_opponent": false, "borda_detail": null}];
 const DIVERGENCE_THRESHOLD = 500;
 let boardIdx = 0;
 
@@ -725,10 +724,11 @@ function renderBoard(vIdx) {
 
   // Engine candidate markers — show what engines recommend FROM this board
   const ENG_MARKER = [
-    ['水匠5',         'rgba(106,172,220,0.35)', 'rgba(106,172,220,0.7)', 0.38],
-    ['tanuki',        'rgba(220,138,106,0.35)', 'rgba(220,138,106,0.7)', 0.33],
-    ['Kristallweizen','rgba(138,220,154,0.35)', 'rgba(138,220,154,0.7)', 0.28],
-    ['dlshogi',       'rgba(200,138,220,0.35)', 'rgba(200,138,220,0.7)', 0.23]
+    ['水匠5',     'rgba(106,172,220,0.35)', 'rgba(106,172,220,0.7)', 0.38],
+    ['Háo',       'rgba(220,138,106,0.35)', 'rgba(220,138,106,0.7)', 0.33],
+    ['振電3',     'rgba(138,220,154,0.35)', 'rgba(138,220,154,0.7)', 0.28],
+    ['ふかうら王A','rgba(200,138,220,0.35)', 'rgba(200,138,220,0.7)', 0.23],
+    ['ふかうら王B','rgba(220,168,138,0.35)', 'rgba(220,168,138,0.7)', 0.18]
   ];
   const candPos = (v.candidatePosIdx >= 0 && v.candidatePosIdx < positions.length)
     ? positions[v.candidatePosIdx] : null;
@@ -850,8 +850,8 @@ function initCharts() {
   const labels = ensemblePositions.map(p => p.move_number);
   const divData = ensemblePositions.map(p => p.divergence);
 
-  const ENGINE_NAMES = ['水匠5', 'tanuki', 'Kristallweizen', 'dlshogi'];
-  const ENGINE_CHART_COLORS = ['#6aacdc', '#dc8a6a', '#8adc9a', '#c88adc'];
+  const ENGINE_NAMES = ["水匠5", "Háo", "振電3", "ふかうら王A", "ふかうら王B"];
+  const ENGINE_CHART_COLORS = ["#6aacdc", "#dc8a6a", "#8adc9a", "#c88adc", "#dca88a"];
 
   const engineDatasets = ENGINE_NAMES.map((name, ei) => ({
     label: name,
