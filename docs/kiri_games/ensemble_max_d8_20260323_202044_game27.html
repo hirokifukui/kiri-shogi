@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiri — ensemble_max_d8_20260323_202044_game27</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg: #111010;
+  --bg-card: #1a1918;
+  --bg-card-hover: #222020;
+  --border: rgba(255,255,255,0.07);
+  --text-primary: #e8e4dc;
+  --text-secondary: #9a9490;
+  --text-muted: #5a5652;
+  --accent-gold: #c8a96e;
+  --accent-gold-dim: rgba(200,169,110,0.15);
+  --engine-mizusho: #6aacdc;
+  --engine-tanuki: #dc8a6a;
+  --engine-kristall: #8adc9a;
+  --engine-dlshogi: #c88adc;
+  --font-serif-en: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  --font-serif-jp: 'Yu Mincho', 'YuMincho', '游明朝', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-serif-jp);
+  font-size: 16px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent-gold); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---- NAV ---- */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem; height: 56px;
+  background: rgba(17,16,16,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.topnav-logo {
+  font-family: var(--font-serif-en);
+  font-size: 1.3rem; font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--accent-gold);
+  text-decoration: none;
+}
+.topnav-logo:hover { text-decoration: none; }
+.topnav-sub {
+  font-size: 0.72rem; color: var(--text-muted);
+  letter-spacing: 0.12em;
+}
+.breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 0.7rem; color: var(--text-secondary);
+  letter-spacing: 0.06em;
+}
+.breadcrumb a { color: var(--text-secondary); }
+.breadcrumb a:hover { color: var(--accent-gold); }
+
+/* ---- CONTAINER ---- */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ---- PAGE HEADER ---- */
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.page-header h1 {
+  font-family: var(--font-serif-en);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+}
+.page-header .subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+}
+
+/* ---- SUMMARY CARDS ---- */
+.summary-row {
+  display: flex; flex-wrap: wrap; gap: 0.8rem;
+  margin-bottom: 2rem;
+}
+.summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 0.8rem 1.2rem;
+  flex: 1 1 120px;
+  min-width: 100px;
+}
+.summary-card .label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+.summary-card .value {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+.summary-card .value.win { color: #6adc8a; }
+.summary-card .value.loss { color: #dc6a6a; }
+.summary-card .value.draw { color: var(--text-secondary); }
+
+/* ---- SECTION ---- */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+/* ---- TABLE ---- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  margin-bottom: 2rem;
+}
+.data-table th {
+  text-align: left;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  vertical-align: top;
+}
+.data-table tr:hover td {
+  background: var(--bg-card-hover);
+}
+.data-table .num { text-align: right; }
+
+/* Game list specific */
+.game-link { color: var(--text-primary); }
+.game-link:hover { color: var(--accent-gold); }
+
+/* ---- DIVERGENCE HIGHLIGHT ---- */
+.row-divergent td {
+  background: rgba(220,106,106,0.08);
+}
+.row-divergent:hover td {
+  background: rgba(220,106,106,0.14);
+}
+.div-high {
+  color: #dc6a6a;
+  font-weight: 600;
+}
+
+/* ---- ENGINE DETAIL (expandable) ---- */
+.engine-detail {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+}
+.engine-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.2rem 0;
+}
+.engine-name {
+  width: 90px;
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+.engine-score {
+  width: 60px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.engine-move {
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+}
+
+/* ---- CLICKABLE ROW ---- */
+.clickable { cursor: pointer; }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 640px) {
+  .topnav { padding: 0 1rem; }
+  .container { padding: 1.2rem 0.8rem 3rem; }
+  .summary-card { flex: 1 1 100%; }
+  .data-table { font-size: 0.7rem; }
+  .data-table th, .data-table td { padding: 0.35rem 0.4rem; }
+  .engine-detail { font-size: 0.65rem; }
+  .engine-name { width: 70px; }
+}
+
+/* ---- WIDER CONTAINER FOR 2-COL ---- */
+.container { max-width: 1120px; }
+
+/* ---- BOARD + MOVE LIST 2-COL ---- */
+.board-and-moves {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.2rem;
+  align-items: start;
+  margin-bottom: 2rem;
+}
+
+/* ---- BOARD ---- */
+.board-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.board-wrap {
+  background: #1a1918;
+  border: 1px solid var(--border);
+  padding: 8px;
+  display: inline-block;
+}
+.board-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+  justify-content: center;
+}
+.board-controls button {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.board-controls button:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-gold);
+}
+#move-counter {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  text-align: center;
+}
+.caps-row {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-top: 0.3rem;
+  text-align: center;
+}
+.caps-label {
+  color: var(--text-muted);
+}
+
+/* ---- ENGINE BEST MOVE IN TABLE ---- */
+.eng-bm {
+  font-size: 0.58rem;
+  color: var(--text-primary) !important;
+  margin-top: 1px;
+}
+
+/* ---- MOVE LIST (right panel) ---- */
+.movelist-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  max-height: 540px;
+  overflow-y: auto;
+}
+.movelist-panel .section-label {
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  padding: 0.6rem 0.6rem 0.3rem;
+  margin-bottom: 0;
+  z-index: 1;
+}
+.movelist-panel .data-table {
+  margin-bottom: 0;
+  font-size: 0.72rem;
+}
+.movelist-panel .data-table th,
+.movelist-panel .data-table td {
+  padding: 0.3rem 0.45rem;
+  white-space: nowrap;
+}
+
+/* ---- CHARTS ---- */
+.chart-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+.chart-wrap-eval {
+  position: relative;
+  height: 200px;
+}
+.chart-wrap-div {
+  position: relative;
+  height: 120px;
+}
+.chart-container canvas {
+  cursor: pointer;
+}
+
+/* ---- ACTIVE ROW ---- */
+.move-active td {
+  background: var(--accent-gold-dim) !important;
+  color: var(--text-primary);
+}
+
+/* ---- HIGHLIGHT SECTION ---- */
+.highlight-section {
+  margin-bottom: 2.5rem;
+  padding: 1.2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+.highlight-section h3 {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 820px) {
+  .board-and-moves {
+    grid-template-columns: 1fr;
+  }
+  .movelist-panel {
+    max-height: 400px;
+  }
+}
+
+  </style>
+</head>
+<body>
+<nav class="topnav">
+  <div>
+    <a href="../index.html" class="topnav-logo">Kiri</a>
+    <span class="topnav-sub">AI対戦ビューア</span>
+  </div>
+  <span class="breadcrumb"><a href="../index.html">Kiri</a> / <a href="index.html">AI対戦</a> / ensemble_max_d8_20260323_202044_game27</span>
+</nav>
+<div class="container">
+<div class="page-header">
+  <h1>ensemble_max_d8_20260323_202044_game27</h1>
+  <p class="subtitle">2026-03-23 20:20</p>
+</div>
+<div class="summary-row">
+  <div class="summary-card">
+    <div class="label">RESULT</div>
+    <div class="value win">勝ち</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">MOVES</div>
+    <div class="value">67</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">STRATEGY</div>
+    <div class="value">max</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">DEPTH</div>
+    <div class="value">8</div>
+  </div>
+  <div class="summary-card">
+    <div class="label">乖離局面</div>
+    <div class="value div-high">5</div>
+  </div>
+</div>
+<div class="board-and-moves">
+  <div class="board-section">
+    <div class="board-wrap">
+      <svg id="board-svg" width="396" height="396" viewBox="0 0 396 396"></svg>
+    </div>
+    <div class="board-controls">
+      <button onclick="goTo(0)" title="最初">|◁</button>
+      <button onclick="goTo(boardIdx-1)" title="前の手">◁</button>
+      <button onclick="goTo(boardIdx+1)" title="次の手">▷</button>
+      <button onclick="goTo(views.length-1)" title="最後">▷|</button>
+    </div>
+    <div id="move-counter">初期局面</div>
+    <div class="caps-row">
+      <span class="caps-label">☖後手:</span> <span id="cap-gote">なし</span>
+      &nbsp;&nbsp;
+      <span class="caps-label">☗先手:</span> <span id="cap-sente">なし</span>
+    </div>
+  </div>
+  <div class="movelist-panel">
+    <p class="section-label">全局面</p>
+    <table class="data-table" id="move-table">
+      <thead>
+        <tr>
+          <th class="num">#</th>
+          <th>採用手</th>
+          <th class="num" style="color:var(--engine-mizusho)">水匠</th>
+          <th class="num" style="color:var(--engine-tanuki)">tanuki</th>
+          <th class="num" style="color:var(--engine-kristall)">Krist</th>
+          <th class="num" style="color:var(--engine-dlshogi)">dl</th>
+          <th class="num">乖離</th>
+        </tr>
+      </thead>
+      <tbody>
+<tr id="move-1" class="clickable" onclick="goTo(posToView(0))"><td class="num">1</td><td class="move-jp" data-idx="0">2g2f</td><td class="num" style="color:#6aacdc">+70<div class="eng-bm" data-idx="0" data-usi="7g7f">7g7f</div></td><td class="num" style="color:#dc8a6a">+41<div class="eng-bm" data-idx="0" data-usi="2g2f">2g2f</div></td><td class="num" style="color:#8adc9a">+76<div class="eng-bm" data-idx="0" data-usi="2g2f">2g2f</div></td><td class="num" style="color:#c88adc">+43<div class="eng-bm" data-idx="0" data-usi="7g7f">7g7f</div></td><td class="num">19</td></tr><tr id="move-2" class="clickable" onclick="goTo(posToView(1))"><td class="num">2</td><td class="move-jp" data-idx="1">3c3d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-3" class="clickable" onclick="goTo(posToView(2))"><td class="num">3</td><td class="move-jp" data-idx="2">7g7f</td><td class="num" style="color:#6aacdc">+85<div class="eng-bm" data-idx="2" data-usi="7g7f">7g7f</div></td><td class="num" style="color:#dc8a6a">+65<div class="eng-bm" data-idx="2" data-usi="7g7f">7g7f</div></td><td class="num" style="color:#8adc9a">+86<div class="eng-bm" data-idx="2" data-usi="7g7f">7g7f</div></td><td class="num" style="color:#c88adc">+54<div class="eng-bm" data-idx="2" data-usi="7g7f">7g7f</div></td><td class="num">24</td></tr><tr id="move-4" class="clickable" onclick="goTo(posToView(3))"><td class="num">4</td><td class="move-jp" data-idx="3">8c8d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-5" class="clickable" onclick="goTo(posToView(4))"><td class="num">5</td><td class="move-jp" data-idx="4">2f2e</td><td class="num" style="color:#6aacdc">+46<div class="eng-bm" data-idx="4" data-usi="2f2e">2f2e</div></td><td class="num" style="color:#dc8a6a">+66<div class="eng-bm" data-idx="4" data-usi="2f2e">2f2e</div></td><td class="num" style="color:#8adc9a">+81<div class="eng-bm" data-idx="4" data-usi="2f2e">2f2e</div></td><td class="num" style="color:#c88adc">+63<div class="eng-bm" data-idx="4" data-usi="2f2e">2f2e</div></td><td class="num">1</td></tr><tr id="move-6" class="clickable" onclick="goTo(posToView(5))"><td class="num">6</td><td class="move-jp" data-idx="5">8d8e</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-7" class="clickable" onclick="goTo(posToView(6))"><td class="num">7</td><td class="move-jp" data-idx="6">6i7h</td><td class="num" style="color:#6aacdc">+66<div class="eng-bm" data-idx="6" data-usi="6i7h">6i7h</div></td><td class="num" style="color:#dc8a6a">+72<div class="eng-bm" data-idx="6" data-usi="2e2d">2e2d</div></td><td class="num" style="color:#8adc9a">+97<div class="eng-bm" data-idx="6" data-usi="6i7h">6i7h</div></td><td class="num" style="color:#c88adc">+62<div class="eng-bm" data-idx="6" data-usi="6i7h">6i7h</div></td><td class="num">16</td></tr><tr id="move-8" class="clickable" onclick="goTo(posToView(7))"><td class="num">8</td><td class="move-jp" data-idx="7">5a5b</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-9" class="clickable" onclick="goTo(posToView(8))"><td class="num">9</td><td class="move-jp" data-idx="8">2e2d</td><td class="num" style="color:#6aacdc">+206<div class="eng-bm" data-idx="8" data-usi="2e2d">2e2d</div></td><td class="num" style="color:#dc8a6a">+77<div class="eng-bm" data-idx="8" data-usi="2e2d">2e2d</div></td><td class="num" style="color:#8adc9a">+122<div class="eng-bm" data-idx="8" data-usi="2e2d">2e2d</div></td><td class="num" style="color:#c88adc">+176<div class="eng-bm" data-idx="8" data-usi="2e2d">2e2d</div></td><td class="num">41</td></tr><tr id="move-10" class="clickable" onclick="goTo(posToView(9))"><td class="num">10</td><td class="move-jp" data-idx="9">2c2d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-11" class="clickable" onclick="goTo(posToView(10))"><td class="num">11</td><td class="move-jp" data-idx="10">2h2d</td><td class="num" style="color:#6aacdc">+112<div class="eng-bm" data-idx="10" data-usi="2h2d">2h2d</div></td><td class="num" style="color:#dc8a6a">+77<div class="eng-bm" data-idx="10" data-usi="2h2d">2h2d</div></td><td class="num" style="color:#8adc9a">+137<div class="eng-bm" data-idx="10" data-usi="2h2d">2h2d</div></td><td class="num" style="color:#c88adc">+174<div class="eng-bm" data-idx="10" data-usi="2h2d">2h2d</div></td><td class="num">66</td></tr><tr id="move-12" class="clickable" onclick="goTo(posToView(11))"><td class="num">12</td><td class="move-jp" data-idx="11">4a3b</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-13" class="clickable" onclick="goTo(posToView(12))"><td class="num">13</td><td class="move-jp" data-idx="12">2d3d</td><td class="num" style="color:#6aacdc">+148<div class="eng-bm" data-idx="12" data-usi="5i5h">5i5h</div></td><td class="num" style="color:#dc8a6a">+87<div class="eng-bm" data-idx="12" data-usi="8h7g">8h7g</div></td><td class="num" style="color:#8adc9a">+113<div class="eng-bm" data-idx="12" data-usi="7h7g">7h7g</div></td><td class="num" style="color:#c88adc">+201<div class="eng-bm" data-idx="12" data-usi="2d3d">2d3d</div></td><td class="num">85</td></tr><tr id="move-14" class="clickable" onclick="goTo(posToView(13))"><td class="num">14</td><td class="move-jp" data-idx="13">2b3c</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-15" class="clickable" onclick="goTo(posToView(14))"><td class="num">15</td><td class="move-jp" data-idx="14">8h7g</td><td class="num" style="color:#6aacdc">+184<div class="eng-bm" data-idx="14" data-usi="8h7g">8h7g</div></td><td class="num" style="color:#dc8a6a">+161<div class="eng-bm" data-idx="14" data-usi="8h7g">8h7g</div></td><td class="num" style="color:#8adc9a">+100<div class="eng-bm" data-idx="14" data-usi="5i5h">5i5h</div></td><td class="num" style="color:#c88adc">+227<div class="eng-bm" data-idx="14" data-usi="8h7g">8h7g</div></td><td class="num">79</td></tr><tr id="move-16" class="clickable" onclick="goTo(posToView(15))"><td class="num">16</td><td class="move-jp" data-idx="15">3c7g+</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-17" class="clickable" onclick="goTo(posToView(16))"><td class="num">17</td><td class="move-jp" data-idx="16">7h7g</td><td class="num" style="color:#6aacdc">+186<div class="eng-bm" data-idx="16" data-usi="7h7g">7h7g</div></td><td class="num" style="color:#dc8a6a">+58<div class="eng-bm" data-idx="16" data-usi="8i7g">8i7g</div></td><td class="num" style="color:#8adc9a">+255<div class="eng-bm" data-idx="16" data-usi="7h7g">7h7g</div></td><td class="num" style="color:#c88adc">+197<div class="eng-bm" data-idx="16" data-usi="8i7g">8i7g</div></td><td class="num">31</td></tr><tr id="move-18" class="clickable" onclick="goTo(posToView(17))"><td class="num">18</td><td class="move-jp" data-idx="17">2a3c</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-19" class="clickable" onclick="goTo(posToView(18))"><td class="num">19</td><td class="move-jp" data-idx="18">3d2d</td><td class="num" style="color:#6aacdc">+166<div class="eng-bm" data-idx="18" data-usi="3d2d">3d2d</div></td><td class="num" style="color:#dc8a6a">+215<div class="eng-bm" data-idx="18" data-usi="5i5h">5i5h</div></td><td class="num" style="color:#8adc9a">+314<div class="eng-bm" data-idx="18" data-usi="3d2d">3d2d</div></td><td class="num" style="color:#c88adc">+261<div class="eng-bm" data-idx="18" data-usi="3d2d">3d2d</div></td><td class="num">30</td></tr><tr id="move-20" class="clickable" onclick="goTo(posToView(19))"><td class="num">20</td><td class="move-jp" data-idx="19">3a2b</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-21" class="clickable" onclick="goTo(posToView(20))"><td class="num">21</td><td class="move-jp" data-idx="20">2d2h</td><td class="num" style="color:#6aacdc">+166<div class="eng-bm" data-idx="20" data-usi="3i4h">3i4h</div></td><td class="num" style="color:#dc8a6a">+207<div class="eng-bm" data-idx="20" data-usi="5i5h">5i5h</div></td><td class="num" style="color:#8adc9a">+254<div class="eng-bm" data-idx="20" data-usi="5i6h">5i6h</div></td><td class="num" style="color:#c88adc">+259<div class="eng-bm" data-idx="20" data-usi="2d2h">2d2h</div></td><td class="num">50</td></tr><tr id="move-22" class="clickable" onclick="goTo(posToView(21))"><td class="num">22</td><td class="move-jp" data-idx="21">8b8d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-23" class="clickable" onclick="goTo(posToView(22))"><td class="num">23</td><td class="move-jp" data-idx="22">5i6h</td><td class="num" style="color:#6aacdc">+96<div class="eng-bm" data-idx="22" data-usi="3i4h">3i4h</div></td><td class="num" style="color:#dc8a6a">+233<div class="eng-bm" data-idx="22" data-usi="3i3h">3i3h</div></td><td class="num" style="color:#8adc9a">+186<div class="eng-bm" data-idx="22" data-usi="5i6h">5i6h</div></td><td class="num" style="color:#c88adc">+335<div class="eng-bm" data-idx="22" data-usi="5i6h">5i6h</div></td><td class="num">164</td></tr><tr id="move-24" class="clickable" onclick="goTo(posToView(23))"><td class="num">24</td><td class="move-jp" data-idx="23">7c7d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-25" class="clickable" onclick="goTo(posToView(24))"><td class="num">25</td><td class="move-jp" data-idx="24">B*5e</td><td class="num" style="color:#6aacdc">+236<div class="eng-bm" data-idx="24" data-usi="P*2d">P*2d</div></td><td class="num" style="color:#dc8a6a">+325<div class="eng-bm" data-idx="24" data-usi="3i3h">3i3h</div></td><td class="num" style="color:#8adc9a">+493<div class="eng-bm" data-idx="24" data-usi="B*5e">B*5e</div></td><td class="num" style="color:#c88adc">+276<div class="eng-bm" data-idx="24" data-usi="4i5h">4i5h</div></td><td class="num">75</td></tr><tr id="move-26" class="clickable" onclick="goTo(posToView(25))"><td class="num">26</td><td class="move-jp" data-idx="25">7a8b</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-27" class="clickable" onclick="goTo(posToView(26))"><td class="num">27</td><td class="move-jp" data-idx="26">3g3f</td><td class="num" style="color:#6aacdc">-208<div class="eng-bm" data-idx="26" data-usi="3i3h">3i3h</div></td><td class="num" style="color:#dc8a6a">-25<div class="eng-bm" data-idx="26" data-usi="3g3f">3g3f</div></td><td class="num" style="color:#8adc9a">-74<div class="eng-bm" data-idx="26" data-usi="7i7h">7i7h</div></td><td class="num" style="color:#c88adc">-29<div class="eng-bm" data-idx="26" data-usi="3g3f">3g3f</div></td><td class="num">73</td></tr><tr id="move-28" class="clickable" onclick="goTo(posToView(27))"><td class="num">28</td><td class="move-jp" data-idx="27">8b7c</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-29" class="clickable" onclick="goTo(posToView(28))"><td class="num">29</td><td class="move-jp" data-idx="28">2i3g</td><td class="num" style="color:#6aacdc">-254<div class="eng-bm" data-idx="28" data-usi="4i5h">4i5h</div></td><td class="num" style="color:#dc8a6a">-22<div class="eng-bm" data-idx="28" data-usi="7i8h">7i8h</div></td><td class="num" style="color:#8adc9a">-62<div class="eng-bm" data-idx="28" data-usi="3i3h">3i3h</div></td><td class="num" style="color:#c88adc">+5<div class="eng-bm" data-idx="28" data-usi="2i3g">2i3g</div></td><td class="num">117</td></tr><tr id="move-30" class="clickable" onclick="goTo(posToView(29))"><td class="num">30</td><td class="move-jp" data-idx="29">7c6d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-31" class="clickable" onclick="goTo(posToView(30))"><td class="num">31</td><td class="move-jp" data-idx="30">5e3c+</td><td class="num" style="color:#6aacdc">-232<div class="eng-bm" data-idx="30" data-usi="5e6f">5e6f</div></td><td class="num" style="color:#dc8a6a">-61<div class="eng-bm" data-idx="30" data-usi="5e3c+">5e3c+</div></td><td class="num" style="color:#8adc9a">-66<div class="eng-bm" data-idx="30" data-usi="5e6f">5e6f</div></td><td class="num" style="color:#c88adc">+124<div class="eng-bm" data-idx="30" data-usi="5e3c+">5e3c+</div></td><td class="num">243</td></tr><tr id="move-32" class="clickable" onclick="goTo(posToView(31))"><td class="num">32</td><td class="move-jp" data-idx="31">2b3c</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-33" class="clickable" onclick="goTo(posToView(32))"><td class="num">33</td><td class="move-jp" data-idx="32">2h2a+</td><td class="num" style="color:#6aacdc">-287<div class="eng-bm" data-idx="32" data-usi="2h2a+">2h2a+</div></td><td class="num" style="color:#dc8a6a">+123<div class="eng-bm" data-idx="32" data-usi="2h2a+">2h2a+</div></td><td class="num" style="color:#8adc9a">-362<div class="eng-bm" data-idx="32" data-usi="2h2a+">2h2a+</div></td><td class="num" style="color:#c88adc">+115<div class="eng-bm" data-idx="32" data-usi="2h2a+">2h2a+</div></td><td class="num">290</td></tr><tr id="move-34" class="clickable" onclick="goTo(posToView(33))"><td class="num">34</td><td class="move-jp" data-idx="33">P*3a</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-35" class="clickable" onclick="goTo(posToView(34))"><td class="num">35</td><td class="move-jp" data-idx="34">P*2d</td><td class="num" style="color:#6aacdc">-87<div class="eng-bm" data-idx="34" data-usi="3g4e">3g4e</div></td><td class="num" style="color:#dc8a6a">+160<div class="eng-bm" data-idx="34" data-usi="P*2d">P*2d</div></td><td class="num" style="color:#8adc9a">-126<div class="eng-bm" data-idx="34" data-usi="P*2d">P*2d</div></td><td class="num" style="color:#c88adc">+106<div class="eng-bm" data-idx="34" data-usi="3g4e">3g4e</div></td><td class="num">123</td></tr><tr id="move-36" class="clickable" onclick="goTo(posToView(35))"><td class="num">36</td><td class="move-jp" data-idx="35">B*2b</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-37" class="clickable" onclick="goTo(posToView(36))"><td class="num">37</td><td class="move-jp" data-idx="36">2d2c+</td><td class="num" style="color:#6aacdc">+2<div class="eng-bm" data-idx="36" data-usi="2d2c+">2d2c+</div></td><td class="num" style="color:#dc8a6a">+684<div class="eng-bm" data-idx="36" data-usi="2d2c+">2d2c+</div></td><td class="num" style="color:#8adc9a">-137<div class="eng-bm" data-idx="36" data-usi="2d2c+">2d2c+</div></td><td class="num" style="color:#c88adc">+553<div class="eng-bm" data-idx="36" data-usi="2d2c+">2d2c+</div></td><td class="num">370</td></tr><tr id="move-38" class="clickable" onclick="goTo(posToView(37))"><td class="num">38</td><td class="move-jp" data-idx="37">3b2c</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-39" class="clickable" onclick="goTo(posToView(38))"><td class="num">39</td><td class="move-jp" data-idx="38">N*1e</td><td class="num" style="color:#6aacdc">+146<div class="eng-bm" data-idx="38" data-usi="N*3e">N*3e</div></td><td class="num" style="color:#dc8a6a">+803<div class="eng-bm" data-idx="38" data-usi="N*1e">N*1e</div></td><td class="num" style="color:#8adc9a">+497<div class="eng-bm" data-idx="38" data-usi="N*1e">N*1e</div></td><td class="num" style="color:#c88adc">+642<div class="eng-bm" data-idx="38" data-usi="N*3e">N*3e</div></td><td class="num">160</td></tr><tr id="move-40" class="clickable" onclick="goTo(posToView(39))"><td class="num">40</td><td class="move-jp" data-idx="39">2c2d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-41" class="clickable" onclick="goTo(posToView(40))"><td class="num">41</td><td class="move-jp" data-idx="40">P*2c</td><td class="num" style="color:#6aacdc">+698<div class="eng-bm" data-idx="40" data-usi="P*2c">P*2c</div></td><td class="num" style="color:#dc8a6a">+592<div class="eng-bm" data-idx="40" data-usi="P*2c">P*2c</div></td><td class="num" style="color:#8adc9a">+670<div class="eng-bm" data-idx="40" data-usi="P*2c">P*2c</div></td><td class="num" style="color:#c88adc">+704<div class="eng-bm" data-idx="40" data-usi="P*2c">P*2c</div></td><td class="num">51</td></tr><tr id="move-42" class="clickable" onclick="goTo(posToView(41))"><td class="num">42</td><td class="move-jp" data-idx="41">B*3b</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-43" class="clickable" onclick="goTo(posToView(42))"><td class="num">43</td><td class="move-jp" data-idx="42">2a3b</td><td class="num" style="color:#6aacdc">+491<div class="eng-bm" data-idx="42" data-usi="2c2b+">2c2b+</div></td><td class="num" style="color:#dc8a6a">+991<div class="eng-bm" data-idx="42" data-usi="2c2b+">2c2b+</div></td><td class="num" style="color:#8adc9a">+636<div class="eng-bm" data-idx="42" data-usi="2a3b">2a3b</div></td><td class="num" style="color:#c88adc">+996<div class="eng-bm" data-idx="42" data-usi="2a3b">2a3b</div></td><td class="num">290</td></tr><tr id="move-44" class="clickable" onclick="goTo(posToView(43))"><td class="num">44</td><td class="move-jp" data-idx="43">3a3b</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-45" class="clickable" onclick="goTo(posToView(44))"><td class="num">45</td><td class="move-jp" data-idx="44">2c2b+</td><td class="num" style="color:#6aacdc">+794<div class="eng-bm" data-idx="44" data-usi="2c2b+">2c2b+</div></td><td class="num" style="color:#dc8a6a">+421<div class="eng-bm" data-idx="44" data-usi="2c2b+">2c2b+</div></td><td class="num" style="color:#8adc9a">+646<div class="eng-bm" data-idx="44" data-usi="2c2b+">2c2b+</div></td><td class="num" style="color:#c88adc">+958<div class="eng-bm" data-idx="44" data-usi="2c2b+">2c2b+</div></td><td class="num">338</td></tr><tr id="move-46" class="clickable" onclick="goTo(posToView(45))"><td class="num">46</td><td class="move-jp" data-idx="45">8a7c</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-47" class="clickable" onclick="goTo(posToView(46))"><td class="num">47</td><td class="move-jp" data-idx="46">1e2c+</td><td class="num" style="color:#6aacdc">+1041<div class="eng-bm" data-idx="46" data-usi="1e2c+">1e2c+</div></td><td class="num" style="color:#dc8a6a">+1133<div class="eng-bm" data-idx="46" data-usi="1e2c+">1e2c+</div></td><td class="num" style="color:#8adc9a">+1123<div class="eng-bm" data-idx="46" data-usi="1e2c+">1e2c+</div></td><td class="num" style="color:#c88adc">+967<div class="eng-bm" data-idx="46" data-usi="2b3b">2b3b</div></td><td class="num">132</td></tr><tr id="move-48" class="clickable" onclick="goTo(posToView(47))"><td class="num">48</td><td class="move-jp" data-idx="47">2d3d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-49" class="clickable" onclick="goTo(posToView(48))"><td class="num">49</td><td class="move-jp" data-idx="48">2b3b</td><td class="num" style="color:#6aacdc">+1560<div class="eng-bm" data-idx="48" data-usi="2b3b">2b3b</div></td><td class="num" style="color:#dc8a6a">+1340<div class="eng-bm" data-idx="48" data-usi="2b1a">2b1a</div></td><td class="num" style="color:#8adc9a">+1405<div class="eng-bm" data-idx="48" data-usi="2b3b">2b3b</div></td><td class="num" style="color:#c88adc">+1157<div class="eng-bm" data-idx="48" data-usi="2b3b">2b3b</div></td><td class="num">278</td></tr><tr id="move-50" class="clickable" onclick="goTo(posToView(49))"><td class="num">50</td><td class="move-jp" data-idx="49">3c4d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-51" class="clickable" onclick="goTo(posToView(50))"><td class="num">51</td><td class="move-jp" data-idx="50">B*1f</td><td class="num" style="color:#6aacdc">+1652<div class="eng-bm" data-idx="50" data-usi="B*1f">B*1f</div></td><td class="num" style="color:#dc8a6a">+1565<div class="eng-bm" data-idx="50" data-usi="2c3c">2c3c</div></td><td class="num" style="color:#8adc9a">+1260<div class="eng-bm" data-idx="50" data-usi="B*6f">B*6f</div></td><td class="num" style="color:#c88adc">+1074<div class="eng-bm" data-idx="50" data-usi="B*1f">B*1f</div></td><td class="num">418</td></tr><tr id="move-52" class="clickable" onclick="goTo(posToView(51))"><td class="num">52</td><td class="move-jp" data-idx="51">P*3c</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-53" class="clickable" onclick="goTo(posToView(52))"><td class="num">53</td><td class="move-jp" data-idx="52">B*6f</td><td class="num" style="color:#6aacdc">+2424<div class="eng-bm" data-idx="52" data-usi="B*6f">B*6f</div></td><td class="num" style="color:#dc8a6a">+1925<div class="eng-bm" data-idx="52" data-usi="B*6f">B*6f</div></td><td class="num" style="color:#8adc9a">+1756<div class="eng-bm" data-idx="52" data-usi="B*6f">B*6f</div></td><td class="num" style="color:#c88adc">+1603<div class="eng-bm" data-idx="52" data-usi="3b3c">3b3c</div></td><td class="num">432</td></tr><tr id="move-54" class="clickable" onclick="goTo(posToView(53))"><td class="num">54</td><td class="move-jp" data-idx="53">7d7e</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-55" class="clickable" onclick="goTo(posToView(54))"><td class="num">55</td><td class="move-jp" data-idx="54">3b3c</td><td class="num" style="color:#6aacdc">+2452<div class="eng-bm" data-idx="54" data-usi="3b3c">3b3c</div></td><td class="num" style="color:#dc8a6a">+2120<div class="eng-bm" data-idx="54" data-usi="2c3c">2c3c</div></td><td class="num" style="color:#8adc9a">+1744<div class="eng-bm" data-idx="54" data-usi="3b3c">3b3c</div></td><td class="num" style="color:#c88adc">+2005<div class="eng-bm" data-idx="54" data-usi="2c3c">2c3c</div></td><td class="num">100</td></tr><tr id="move-56" class="clickable" onclick="goTo(posToView(55))"><td class="num">56</td><td class="move-jp" data-idx="55">4d5e</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-57" class="row-divergent clickable" onclick="goTo(posToView(56))"><td class="num">57</td><td class="move-jp" data-idx="56">3c3d</td><td class="num" style="color:#6aacdc">+2384<div class="eng-bm" data-idx="56" data-usi="1f3d">1f3d</div></td><td class="num" style="color:#dc8a6a">+2457<div class="eng-bm" data-idx="56" data-usi="3c3d">3c3d</div></td><td class="num" style="color:#8adc9a">+1770<div class="eng-bm" data-idx="56" data-usi="1f3d">1f3d</div></td><td class="num" style="color:#c88adc">+1594<div class="eng-bm" data-idx="56" data-usi="1f3d">1f3d</div></td><td class="num"><span class="div-high">609</span></td></tr><tr id="move-58" class="clickable" onclick="goTo(posToView(57))"><td class="num">58</td><td class="move-jp" data-idx="57">5b6b</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-59" class="clickable" onclick="goTo(posToView(58))"><td class="num">59</td><td class="move-jp" data-idx="58">6f5e</td><td class="num" style="color:#6aacdc">+2553<div class="eng-bm" data-idx="58" data-usi="6f5e">6f5e</div></td><td class="num" style="color:#dc8a6a">+2352<div class="eng-bm" data-idx="58" data-usi="3d4c">3d4c</div></td><td class="num" style="color:#8adc9a">+1807<div class="eng-bm" data-idx="58" data-usi="3d4c">3d4c</div></td><td class="num" style="color:#c88adc">+1853<div class="eng-bm" data-idx="58" data-usi="3d4c">3d4c</div></td><td class="num">384</td></tr><tr id="move-60" class="clickable" onclick="goTo(posToView(59))"><td class="num">60</td><td class="move-jp" data-idx="59">6d5e</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-61" class="row-divergent clickable" onclick="goTo(posToView(60))"><td class="num">61</td><td class="move-jp" data-idx="60">3d4c</td><td class="num" style="color:#6aacdc">+2830<div class="eng-bm" data-idx="60" data-usi="3d4c">3d4c</div></td><td class="num" style="color:#dc8a6a">+2251<div class="eng-bm" data-idx="60" data-usi="3d4c">3d4c</div></td><td class="num" style="color:#8adc9a">+1804<div class="eng-bm" data-idx="60" data-usi="3d4c">3d4c</div></td><td class="num" style="color:#c88adc">+1020<div class="eng-bm" data-idx="60" data-usi="7f7e">7f7e</div></td><td class="num"><span class="div-high">1275</span></td></tr><tr id="move-62" class="clickable" onclick="goTo(posToView(61))"><td class="num">62</td><td class="move-jp" data-idx="61">B*9d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-63" class="row-divergent clickable" onclick="goTo(posToView(62))"><td class="num">63</td><td class="move-jp" data-idx="62">S*9e</td><td class="num" style="color:#6aacdc">+3755<div class="eng-bm" data-idx="62" data-usi="S*9e">S*9e</div></td><td class="num" style="color:#dc8a6a">+3042<div class="eng-bm" data-idx="62" data-usi="S*9e">S*9e</div></td><td class="num" style="color:#8adc9a">+2967<div class="eng-bm" data-idx="62" data-usi="S*9e">S*9e</div></td><td class="num" style="color:#c88adc">+2178<div class="eng-bm" data-idx="62" data-usi="S*9e">S*9e</div></td><td class="num"><span class="div-high">1076</span></td></tr><tr id="move-64" class="clickable" onclick="goTo(posToView(63))"><td class="num">64</td><td class="move-jp" data-idx="63">8d5d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-65" class="row-divergent clickable" onclick="goTo(posToView(64))"><td class="num">65</td><td class="move-jp" data-idx="64">9e9d</td><td class="num" style="color:#6aacdc">+4658<div class="eng-bm" data-idx="64" data-usi="9e9d">9e9d</div></td><td class="num" style="color:#dc8a6a">+3117<div class="eng-bm" data-idx="64" data-usi="9e9d">9e9d</div></td><td class="num" style="color:#8adc9a">+3377<div class="eng-bm" data-idx="64" data-usi="9e9d">9e9d</div></td><td class="num" style="color:#c88adc">+1905<div class="eng-bm" data-idx="64" data-usi="9e9d">9e9d</div></td><td class="num"><span class="div-high">1812</span></td></tr><tr id="move-66" class="clickable" onclick="goTo(posToView(65))"><td class="num">66</td><td class="move-jp" data-idx="65">9c9d</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr><tr id="move-67" class="row-divergent clickable" onclick="goTo(posToView(66))"><td class="num">67</td><td class="move-jp" data-idx="66">3g4e</td><td class="num" style="color:#6aacdc">+4634<div class="eng-bm" data-idx="66" data-usi="3g4e">3g4e</div></td><td class="num" style="color:#dc8a6a">+3145<div class="eng-bm" data-idx="66" data-usi="B*8c">B*8c</div></td><td class="num" style="color:#8adc9a">+3951<div class="eng-bm" data-idx="66" data-usi="3g4e">3g4e</div></td><td class="num" style="color:#c88adc">+1468<div class="eng-bm" data-idx="66" data-usi="7f7e">7f7e</div></td><td class="num"><span class="div-high">2442</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="chart-container">
+  <p class="section-label">評価値グラフ</p>
+  <div class="chart-wrap-eval"><canvas id="evalChart"></canvas></div>
+</div>
+<div class="chart-container">
+  <p class="section-label">乖離</p>
+  <div class="chart-wrap-div"><canvas id="divChart"></canvas></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// =====================================================================
+// Data
+// =====================================================================
+const positions = [{"move_number": 1, "sfen": "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1", "selected_move": "2g2f", "nnue_mean": 62, "dl_score": 43, "divergence": 19, "engine_results": {"Kristallweizen": {"score": 76, "best_move": "2g2f"}, "水匠5": {"score": 70, "best_move": "7g7f"}, "tanuki": {"score": 41, "best_move": "2g2f"}, "dlshogi": {"score": 43, "best_move": "7g7f"}}, "is_opponent": false}, {"move_number": 2, "sfen": "lnsgkgsnl/1r5b1/ppppppppp/9/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL w - 2", "selected_move": "3c3d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 3, "sfen": "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL b - 3", "selected_move": "7g7f", "nnue_mean": 78, "dl_score": 54, "divergence": 24, "engine_results": {"水匠5": {"score": 85, "best_move": "7g7f"}, "Kristallweizen": {"score": 86, "best_move": "7g7f"}, "tanuki": {"score": 65, "best_move": "7g7f"}, "dlshogi": {"score": 54, "best_move": "7g7f"}}, "is_opponent": false}, {"move_number": 4, "sfen": "lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P4P1/PP1PPPP1P/1B5R1/LNSGKGSNL w - 4", "selected_move": "8c8d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 5, "sfen": "lnsgkgsnl/1r5b1/p1pppp1pp/1p4p2/9/2P4P1/PP1PPPP1P/1B5R1/LNSGKGSNL b - 5", "selected_move": "2f2e", "nnue_mean": 64, "dl_score": 63, "divergence": 1, "engine_results": {"Kristallweizen": {"score": 81, "best_move": "2f2e"}, "tanuki": {"score": 66, "best_move": "2f2e"}, "水匠5": {"score": 46, "best_move": "2f2e"}, "dlshogi": {"score": 63, "best_move": "2f2e"}}, "is_opponent": false}, {"move_number": 6, "sfen": "lnsgkgsnl/1r5b1/p1pppp1pp/1p4p2/7P1/2P6/PP1PPPP1P/1B5R1/LNSGKGSNL w - 6", "selected_move": "8d8e", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 7, "sfen": "lnsgkgsnl/1r5b1/p1pppp1pp/6p2/1p5P1/2P6/PP1PPPP1P/1B5R1/LNSGKGSNL b - 7", "selected_move": "6i7h", "nnue_mean": 78, "dl_score": 62, "divergence": 16, "engine_results": {"tanuki": {"score": 72, "best_move": "2e2d"}, "Kristallweizen": {"score": 97, "best_move": "6i7h"}, "水匠5": {"score": 66, "best_move": "6i7h"}, "dlshogi": {"score": 62, "best_move": "6i7h"}}, "is_opponent": false}, {"move_number": 8, "sfen": "lnsgkgsnl/1r5b1/p1pppp1pp/6p2/1p5P1/2P6/PP1PPPP1P/1BG4R1/LNS1KGSNL w - 8", "selected_move": "5a5b", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 9, "sfen": "lnsg1gsnl/1r2k2b1/p1pppp1pp/6p2/1p5P1/2P6/PP1PPPP1P/1BG4R1/LNS1KGSNL b - 9", "selected_move": "2e2d", "nnue_mean": 135, "dl_score": 176, "divergence": 41, "engine_results": {"tanuki": {"score": 77, "best_move": "2e2d"}, "Kristallweizen": {"score": 122, "best_move": "2e2d"}, "水匠5": {"score": 206, "best_move": "2e2d"}, "dlshogi": {"score": 176, "best_move": "2e2d"}}, "is_opponent": false}, {"move_number": 10, "sfen": "lnsg1gsnl/1r2k2b1/p1pppp1pp/6pP1/1p7/2P6/PP1PPPP1P/1BG4R1/LNS1KGSNL w - 10", "selected_move": "2c2d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 11, "sfen": "lnsg1gsnl/1r2k2b1/p1pppp2p/6pp1/1p7/2P6/PP1PPPP1P/1BG4R1/LNS1KGSNL b p 11", "selected_move": "2h2d", "nnue_mean": 108, "dl_score": 174, "divergence": 66, "engine_results": {"tanuki": {"score": 77, "best_move": "2h2d"}, "Kristallweizen": {"score": 137, "best_move": "2h2d"}, "水匠5": {"score": 112, "best_move": "2h2d"}, "dlshogi": {"score": 174, "best_move": "2h2d"}}, "is_opponent": false}, {"move_number": 12, "sfen": "lnsg1gsnl/1r2k2b1/p1pppp2p/6pR1/1p7/2P6/PP1PPPP1P/1BG6/LNS1KGSNL w Pp 12", "selected_move": "4a3b", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 13, "sfen": "lnsg2snl/1r2k1gb1/p1pppp2p/6pR1/1p7/2P6/PP1PPPP1P/1BG6/LNS1KGSNL b Pp 13", "selected_move": "2d3d", "nnue_mean": 116, "dl_score": 201, "divergence": 85, "engine_results": {"水匠5": {"score": 148, "best_move": "5i5h"}, "tanuki": {"score": 87, "best_move": "8h7g"}, "Kristallweizen": {"score": 113, "best_move": "7h7g"}, "dlshogi": {"score": 201, "best_move": "2d3d"}}, "is_opponent": false}, {"move_number": 14, "sfen": "lnsg2snl/1r2k1gb1/p1pppp2p/6R2/1p7/2P6/PP1PPPP1P/1BG6/LNS1KGSNL w 2Pp 14", "selected_move": "2b3c", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 15, "sfen": "lnsg2snl/1r2k1g2/p1ppppb1p/6R2/1p7/2P6/PP1PPPP1P/1BG6/LNS1KGSNL b 2Pp 15", "selected_move": "8h7g", "nnue_mean": 148, "dl_score": 227, "divergence": 79, "engine_results": {"水匠5": {"score": 184, "best_move": "8h7g"}, "tanuki": {"score": 161, "best_move": "8h7g"}, "Kristallweizen": {"score": 100, "best_move": "5i5h"}, "dlshogi": {"score": 227, "best_move": "8h7g"}}, "is_opponent": false}, {"move_number": 16, "sfen": "lnsg2snl/1r2k1g2/p1ppppb1p/6R2/1p7/2P6/PPBPPPP1P/2G6/LNS1KGSNL w 2Pp 16", "selected_move": "3c7g+", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 17, "sfen": "lnsg2snl/1r2k1g2/p1pppp2p/6R2/1p7/2P6/PP+bPPPP1P/2G6/LNS1KGSNL b 2Pbp 17", "selected_move": "7h7g", "nnue_mean": 166, "dl_score": 197, "divergence": 31, "engine_results": {"水匠5": {"score": 186, "best_move": "7h7g"}, "tanuki": {"score": 58, "best_move": "8i7g"}, "Kristallweizen": {"score": 255, "best_move": "7h7g"}, "dlshogi": {"score": 197, "best_move": "8i7g"}}, "is_opponent": false}, {"move_number": 18, "sfen": "lnsg2snl/1r2k1g2/p1pppp2p/6R2/1p7/2P6/PPGPPPP1P/9/LNS1KGSNL w B2Pbp 18", "selected_move": "2a3c", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 19, "sfen": "lnsg2s1l/1r2k1g2/p1ppppn1p/6R2/1p7/2P6/PPGPPPP1P/9/LNS1KGSNL b B2Pbp 19", "selected_move": "3d2d", "nnue_mean": 231, "dl_score": 261, "divergence": 30, "engine_results": {"Kristallweizen": {"score": 314, "best_move": "3d2d"}, "tanuki": {"score": 215, "best_move": "5i5h"}, "水匠5": {"score": 166, "best_move": "3d2d"}, "dlshogi": {"score": 261, "best_move": "3d2d"}}, "is_opponent": false}, {"move_number": 20, "sfen": "lnsg2s1l/1r2k1g2/p1ppppn1p/7R1/1p7/2P6/PPGPPPP1P/9/LNS1KGSNL w B2Pbp 20", "selected_move": "3a2b", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 21, "sfen": "lnsg4l/1r2k1gs1/p1ppppn1p/7R1/1p7/2P6/PPGPPPP1P/9/LNS1KGSNL b B2Pbp 21", "selected_move": "2d2h", "nnue_mean": 209, "dl_score": 259, "divergence": 50, "engine_results": {"水匠5": {"score": 166, "best_move": "3i4h"}, "tanuki": {"score": 207, "best_move": "5i5h"}, "Kristallweizen": {"score": 254, "best_move": "5i6h"}, "dlshogi": {"score": 259, "best_move": "2d2h"}}, "is_opponent": false}, {"move_number": 22, "sfen": "lnsg4l/1r2k1gs1/p1ppppn1p/9/1p7/2P6/PPGPPPP1P/7R1/LNS1KGSNL w B2Pbp 22", "selected_move": "8b8d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 23, "sfen": "lnsg4l/4k1gs1/p1ppppn1p/1r7/1p7/2P6/PPGPPPP1P/7R1/LNS1KGSNL b B2Pbp 23", "selected_move": "5i6h", "nnue_mean": 171, "dl_score": 335, "divergence": 164, "engine_results": {"水匠5": {"score": 96, "best_move": "3i4h"}, "tanuki": {"score": 233, "best_move": "3i3h"}, "Kristallweizen": {"score": 186, "best_move": "5i6h"}, "dlshogi": {"score": 335, "best_move": "5i6h"}}, "is_opponent": false}, {"move_number": 24, "sfen": "lnsg4l/4k1gs1/p1ppppn1p/1r7/1p7/2P6/PPGPPPP1P/3K3R1/LNS2GSNL w B2Pbp 24", "selected_move": "7c7d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 25, "sfen": "lnsg4l/4k1gs1/p2pppn1p/1rp6/1p7/2P6/PPGPPPP1P/3K3R1/LNS2GSNL b B2Pbp 25", "selected_move": "B*5e", "nnue_mean": 351, "dl_score": 276, "divergence": 75, "engine_results": {"Kristallweizen": {"score": 493, "best_move": "B*5e"}, "tanuki": {"score": 325, "best_move": "3i3h"}, "水匠5": {"score": 236, "best_move": "P*2d"}, "dlshogi": {"score": 276, "best_move": "4i5h"}}, "is_opponent": false}, {"move_number": 26, "sfen": "lnsg4l/4k1gs1/p2pppn1p/1rp6/1p2B4/2P6/PPGPPPP1P/3K3R1/LNS2GSNL w 2Pbp 26", "selected_move": "7a8b", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 27, "sfen": "ln1g4l/1s2k1gs1/p2pppn1p/1rp6/1p2B4/2P6/PPGPPPP1P/3K3R1/LNS2GSNL b 2Pbp 27", "selected_move": "3g3f", "nnue_mean": -102, "dl_score": -29, "divergence": 73, "engine_results": {"Kristallweizen": {"score": -74, "best_move": "7i7h"}, "水匠5": {"score": -208, "best_move": "3i3h"}, "tanuki": {"score": -25, "best_move": "3g3f"}, "dlshogi": {"score": -29, "best_move": "3g3f"}}, "is_opponent": false}, {"move_number": 28, "sfen": "ln1g4l/1s2k1gs1/p2pppn1p/1rp6/1p2B4/2P3P2/PPGPPP2P/3K3R1/LNS2GSNL w 2Pbp 28", "selected_move": "8b7c", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 29, "sfen": "ln1g4l/4k1gs1/p1spppn1p/1rp6/1p2B4/2P3P2/PPGPPP2P/3K3R1/LNS2GSNL b 2Pbp 29", "selected_move": "2i3g", "nnue_mean": -112, "dl_score": 5, "divergence": 117, "engine_results": {"水匠5": {"score": -254, "best_move": "4i5h"}, "Kristallweizen": {"score": -62, "best_move": "3i3h"}, "tanuki": {"score": -22, "best_move": "7i8h"}, "dlshogi": {"score": 5, "best_move": "2i3g"}}, "is_opponent": false}, {"move_number": 30, "sfen": "ln1g4l/4k1gs1/p1spppn1p/1rp6/1p2B4/2P3P2/PPGPPPN1P/3K3R1/LNS2GS1L w 2Pbp 30", "selected_move": "7c6d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 31, "sfen": "ln1g4l/4k1gs1/p2pppn1p/1rps5/1p2B4/2P3P2/PPGPPPN1P/3K3R1/LNS2GS1L b 2Pbp 31", "selected_move": "5e3c+", "nnue_mean": -119, "dl_score": 124, "divergence": 243, "engine_results": {"水匠5": {"score": -232, "best_move": "5e6f"}, "Kristallweizen": {"score": -66, "best_move": "5e6f"}, "tanuki": {"score": -61, "best_move": "5e3c+"}, "dlshogi": {"score": 124, "best_move": "5e3c+"}}, "is_opponent": false}, {"move_number": 32, "sfen": "ln1g4l/4k1gs1/p2ppp+B1p/1rps5/1p7/2P3P2/PPGPPPN1P/3K3R1/LNS2GS1L w N2Pbp 32", "selected_move": "2b3c", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 33, "sfen": "ln1g4l/4k1g2/p2ppps1p/1rps5/1p7/2P3P2/PPGPPPN1P/3K3R1/LNS2GS1L b N2P2bp 33", "selected_move": "2h2a+", "nnue_mean": -175, "dl_score": 115, "divergence": 290, "engine_results": {"tanuki": {"score": 123, "best_move": "2h2a+"}, "水匠5": {"score": -287, "best_move": "2h2a+"}, "Kristallweizen": {"score": -362, "best_move": "2h2a+"}, "dlshogi": {"score": 115, "best_move": "2h2a+"}}, "is_opponent": false}, {"move_number": 34, "sfen": "ln1g3+Rl/4k1g2/p2ppps1p/1rps5/1p7/2P3P2/PPGPPPN1P/3K5/LNS2GS1L w N2P2bp 34", "selected_move": "P*3a", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 35, "sfen": "ln1g2p+Rl/4k1g2/p2ppps1p/1rps5/1p7/2P3P2/PPGPPPN1P/3K5/LNS2GS1L b N2P2b 35", "selected_move": "P*2d", "nnue_mean": -17, "dl_score": 106, "divergence": 123, "engine_results": {"水匠5": {"score": -87, "best_move": "3g4e"}, "Kristallweizen": {"score": -126, "best_move": "P*2d"}, "tanuki": {"score": 160, "best_move": "P*2d"}, "dlshogi": {"score": 106, "best_move": "3g4e"}}, "is_opponent": false}, {"move_number": 36, "sfen": "ln1g2p+Rl/4k1g2/p2ppps1p/1rps3P1/1p7/2P3P2/PPGPPPN1P/3K5/LNS2GS1L w NP2b 36", "selected_move": "B*2b", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 37, "sfen": "ln1g2p+Rl/4k1gb1/p2ppps1p/1rps3P1/1p7/2P3P2/PPGPPPN1P/3K5/LNS2GS1L b NPb 37", "selected_move": "2d2c+", "nnue_mean": 183, "dl_score": 553, "divergence": 370, "engine_results": {"水匠5": {"score": 2, "best_move": "2d2c+"}, "Kristallweizen": {"score": -137, "best_move": "2d2c+"}, "tanuki": {"score": 684, "best_move": "2d2c+"}, "dlshogi": {"score": 553, "best_move": "2d2c+"}}, "is_opponent": false}, {"move_number": 38, "sfen": "ln1g2p+Rl/4k1gb1/p2ppps+Pp/1rps5/1p7/2P3P2/PPGPPPN1P/3K5/LNS2GS1L w NPb 38", "selected_move": "3b2c", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 39, "sfen": "ln1g2p+Rl/4k2b1/p2pppsgp/1rps5/1p7/2P3P2/PPGPPPN1P/3K5/LNS2GS1L b NPbp 39", "selected_move": "N*1e", "nnue_mean": 482, "dl_score": 642, "divergence": 160, "engine_results": {"Kristallweizen": {"score": 497, "best_move": "N*1e"}, "水匠5": {"score": 146, "best_move": "N*3e"}, "tanuki": {"score": 803, "best_move": "N*1e"}, "dlshogi": {"score": 642, "best_move": "N*3e"}}, "is_opponent": false}, {"move_number": 40, "sfen": "ln1g2p+Rl/4k2b1/p2pppsgp/1rps5/1p6N/2P3P2/PPGPPPN1P/3K5/LNS2GS1L w Pbp 40", "selected_move": "2c2d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 41, "sfen": "ln1g2p+Rl/4k2b1/p2ppps1p/1rps3g1/1p6N/2P3P2/PPGPPPN1P/3K5/LNS2GS1L b Pbp 41", "selected_move": "P*2c", "nnue_mean": 653, "dl_score": 704, "divergence": 51, "engine_results": {"水匠5": {"score": 698, "best_move": "P*2c"}, "tanuki": {"score": 592, "best_move": "P*2c"}, "Kristallweizen": {"score": 670, "best_move": "P*2c"}, "dlshogi": {"score": 704, "best_move": "P*2c"}}, "is_opponent": false}, {"move_number": 42, "sfen": "ln1g2p+Rl/4k2b1/p2pppsPp/1rps3g1/1p6N/2P3P2/PPGPPPN1P/3K5/LNS2GS1L w bp 42", "selected_move": "B*3b", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 43, "sfen": "ln1g2p+Rl/4k1bb1/p2pppsPp/1rps3g1/1p6N/2P3P2/PPGPPPN1P/3K5/LNS2GS1L b p 43", "selected_move": "2a3b", "nnue_mean": 706, "dl_score": 996, "divergence": 290, "engine_results": {"Kristallweizen": {"score": 636, "best_move": "2a3b"}, "tanuki": {"score": 991, "best_move": "2c2b+"}, "水匠5": {"score": 491, "best_move": "2c2b+"}, "dlshogi": {"score": 996, "best_move": "2a3b"}}, "is_opponent": false}, {"move_number": 44, "sfen": "ln1g2p1l/4k1+Rb1/p2pppsPp/1rps3g1/1p6N/2P3P2/PPGPPPN1P/3K5/LNS2GS1L w Bp 44", "selected_move": "3a3b", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 45, "sfen": "ln1g4l/4k1pb1/p2pppsPp/1rps3g1/1p6N/2P3P2/PPGPPPN1P/3K5/LNS2GS1L b Brp 45", "selected_move": "2c2b+", "nnue_mean": 620, "dl_score": 958, "divergence": 338, "engine_results": {"Kristallweizen": {"score": 646, "best_move": "2c2b+"}, "水匠5": {"score": 794, "best_move": "2c2b+"}, "tanuki": {"score": 421, "best_move": "2c2b+"}, "dlshogi": {"score": 958, "best_move": "2c2b+"}}, "is_opponent": false}, {"move_number": 46, "sfen": "ln1g4l/4k1p+P1/p2ppps1p/1rps3g1/1p6N/2P3P2/PPGPPPN1P/3K5/LNS2GS1L w 2Brp 46", "selected_move": "8a7c", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 47, "sfen": "l2g4l/4k1p+P1/p1nppps1p/1rps3g1/1p6N/2P3P2/PPGPPPN1P/3K5/LNS2GS1L b 2Brp 47", "selected_move": "1e2c+", "nnue_mean": 1099, "dl_score": 967, "divergence": 132, "engine_results": {"水匠5": {"score": 1041, "best_move": "1e2c+"}, "tanuki": {"score": 1133, "best_move": "1e2c+"}, "Kristallweizen": {"score": 1123, "best_move": "1e2c+"}, "dlshogi": {"score": 967, "best_move": "2b3b"}}, "is_opponent": false}, {"move_number": 48, "sfen": "l2g4l/4k1p+P1/p1nppps+Np/1rps3g1/1p7/2P3P2/PPGPPPN1P/3K5/LNS2GS1L w 2Brp 48", "selected_move": "2d3d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 49, "sfen": "l2g4l/4k1p+P1/p1nppps+Np/1rps2g2/1p7/2P3P2/PPGPPPN1P/3K5/LNS2GS1L b 2Brp 49", "selected_move": "2b3b", "nnue_mean": 1435, "dl_score": 1157, "divergence": 278, "engine_results": {"Kristallweizen": {"score": 1405, "best_move": "2b3b"}, "水匠5": {"score": 1560, "best_move": "2b3b"}, "tanuki": {"score": 1340, "best_move": "2b1a"}, "dlshogi": {"score": 1157, "best_move": "2b3b"}}, "is_opponent": false}, {"move_number": 50, "sfen": "l2g4l/4k1+P2/p1nppps+Np/1rps2g2/1p7/2P3P2/PPGPPPN1P/3K5/LNS2GS1L w 2BPrp 50", "selected_move": "3c4d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 51, "sfen": "l2g4l/4k1+P2/p1nppp1+Np/1rps1sg2/1p7/2P3P2/PPGPPPN1P/3K5/LNS2GS1L b 2BPrp 51", "selected_move": "B*1f", "nnue_mean": 1492, "dl_score": 1074, "divergence": 418, "engine_results": {"水匠5": {"score": 1652, "best_move": "B*1f"}, "Kristallweizen": {"score": 1260, "best_move": "B*6f"}, "tanuki": {"score": 1565, "best_move": "2c3c"}, "dlshogi": {"score": 1074, "best_move": "B*1f"}}, "is_opponent": false}, {"move_number": 52, "sfen": "l2g4l/4k1+P2/p1nppp1+Np/1rps1sg2/1p7/2P3P1B/PPGPPPN1P/3K5/LNS2GS1L w BPrp 52", "selected_move": "P*3c", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 53, "sfen": "l2g4l/4k1+P2/p1npppp+Np/1rps1sg2/1p7/2P3P1B/PPGPPPN1P/3K5/LNS2GS1L b BPr 53", "selected_move": "B*6f", "nnue_mean": 2035, "dl_score": 1603, "divergence": 432, "engine_results": {"tanuki": {"score": 1925, "best_move": "B*6f"}, "水匠5": {"score": 2424, "best_move": "B*6f"}, "Kristallweizen": {"score": 1756, "best_move": "B*6f"}, "dlshogi": {"score": 1603, "best_move": "3b3c"}}, "is_opponent": false}, {"move_number": 54, "sfen": "l2g4l/4k1+P2/p1npppp+Np/1rps1sg2/1p7/2PB2P1B/PPGPPPN1P/3K5/LNS2GS1L w Pr 54", "selected_move": "7d7e", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 55, "sfen": "l2g4l/4k1+P2/p1npppp+Np/1r1s1sg2/1pp6/2PB2P1B/PPGPPPN1P/3K5/LNS2GS1L b Pr 55", "selected_move": "3b3c", "nnue_mean": 2105, "dl_score": 2005, "divergence": 100, "engine_results": {"水匠5": {"score": 2452, "best_move": "3b3c"}, "tanuki": {"score": 2120, "best_move": "2c3c"}, "Kristallweizen": {"score": 1744, "best_move": "3b3c"}, "dlshogi": {"score": 2005, "best_move": "2c3c"}}, "is_opponent": false}, {"move_number": 56, "sfen": "l2g4l/4k4/p1nppp+P+Np/1r1s1sg2/1pp6/2PB2P1B/PPGPPPN1P/3K5/LNS2GS1L w 2Pr 56", "selected_move": "4d5e", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 57, "sfen": "l2g4l/4k4/p1nppp+P+Np/1r1s2g2/1pp1s4/2PB2P1B/PPGPPPN1P/3K5/LNS2GS1L b 2Pr 57", "selected_move": "3c3d", "nnue_mean": 2203, "dl_score": 1594, "divergence": 609, "engine_results": {"水匠5": {"score": 2384, "best_move": "1f3d"}, "Kristallweizen": {"score": 1770, "best_move": "1f3d"}, "tanuki": {"score": 2457, "best_move": "3c3d"}, "dlshogi": {"score": 1594, "best_move": "1f3d"}}, "is_opponent": false}, {"move_number": 58, "sfen": "l2g4l/4k4/p1nppp1+Np/1r1s2+P2/1pp1s4/2PB2P1B/PPGPPPN1P/3K5/LNS2GS1L w G2Pr 58", "selected_move": "5b6b", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 59, "sfen": "l2g4l/3k5/p1nppp1+Np/1r1s2+P2/1pp1s4/2PB2P1B/PPGPPPN1P/3K5/LNS2GS1L b G2Pr 59", "selected_move": "6f5e", "nnue_mean": 2237, "dl_score": 1853, "divergence": 384, "engine_results": {"tanuki": {"score": 2352, "best_move": "3d4c"}, "Kristallweizen": {"score": 1807, "best_move": "3d4c"}, "水匠5": {"score": 2553, "best_move": "6f5e"}, "dlshogi": {"score": 1853, "best_move": "3d4c"}}, "is_opponent": false}, {"move_number": 60, "sfen": "l2g4l/3k5/p1nppp1+Np/1r1s2+P2/1pp1B4/2P3P1B/PPGPPPN1P/3K5/LNS2GS1L w GS2Pr 60", "selected_move": "6d5e", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 61, "sfen": "l2g4l/3k5/p1nppp1+Np/1r4+P2/1pp1s4/2P3P1B/PPGPPPN1P/3K5/LNS2GS1L b GS2Prb 61", "selected_move": "3d4c", "nnue_mean": 2295, "dl_score": 1020, "divergence": 1275, "engine_results": {"tanuki": {"score": 2251, "best_move": "3d4c"}, "水匠5": {"score": 2830, "best_move": "3d4c"}, "Kristallweizen": {"score": 1804, "best_move": "3d4c"}, "dlshogi": {"score": 1020, "best_move": "7f7e"}}, "is_opponent": false}, {"move_number": 62, "sfen": "l2g4l/3k5/p1npp+P1+Np/1r7/1pp1s4/2P3P1B/PPGPPPN1P/3K5/LNS2GS1L w GS3Prb 62", "selected_move": "B*9d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 63, "sfen": "l2g4l/3k5/p1npp+P1+Np/br7/1pp1s4/2P3P1B/PPGPPPN1P/3K5/LNS2GS1L b GS3Pr 63", "selected_move": "S*9e", "nnue_mean": 3254, "dl_score": 2178, "divergence": 1076, "engine_results": {"Kristallweizen": {"score": 2967, "best_move": "S*9e"}, "水匠5": {"score": 3755, "best_move": "S*9e"}, "tanuki": {"score": 3042, "best_move": "S*9e"}, "dlshogi": {"score": 2178, "best_move": "S*9e"}}, "is_opponent": false}, {"move_number": 64, "sfen": "l2g4l/3k5/p1npp+P1+Np/br7/Spp1s4/2P3P1B/PPGPPPN1P/3K5/LNS2GS1L w G3Pr 64", "selected_move": "8d5d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 65, "sfen": "l2g4l/3k5/p1npp+P1+Np/b3r4/Spp1s4/2P3P1B/PPGPPPN1P/3K5/LNS2GS1L b G3Pr 65", "selected_move": "9e9d", "nnue_mean": 3717, "dl_score": 1905, "divergence": 1812, "engine_results": {"水匠5": {"score": 4658, "best_move": "9e9d"}, "tanuki": {"score": 3117, "best_move": "9e9d"}, "Kristallweizen": {"score": 3377, "best_move": "9e9d"}, "dlshogi": {"score": 1905, "best_move": "9e9d"}}, "is_opponent": false}, {"move_number": 66, "sfen": "l2g4l/3k5/p1npp+P1+Np/S3r4/1pp1s4/2P3P1B/PPGPPPN1P/3K5/LNS2GS1L w BG3Pr 66", "selected_move": "9c9d", "nnue_mean": 0, "dl_score": 0, "divergence": 0, "engine_results": {}, "is_opponent": true}, {"move_number": 67, "sfen": "l2g4l/3k5/2npp+P1+Np/p3r4/1pp1s4/2P3P1B/PPGPPPN1P/3K5/LNS2GS1L b BG3Prs 67", "selected_move": "3g4e", "nnue_mean": 3910, "dl_score": 1468, "divergence": 2442, "engine_results": {"Kristallweizen": {"score": 3951, "best_move": "3g4e"}, "水匠5": {"score": 4634, "best_move": "3g4e"}, "tanuki": {"score": 3145, "best_move": "B*8c"}, "dlshogi": {"score": 1468, "best_move": "7f7e"}}, "is_opponent": false}];
+const DIVERGENCE_THRESHOLD = 500;
+let boardIdx = 0;
+
+// =====================================================================
+// SFEN Parser
+// =====================================================================
+const SFEN_PID = {P:1,L:2,N:3,S:4,G:5,B:6,R:7,K:8};
+const KOMA_LABEL = ['','歩','香','桂','銀','金','角','飛','王','','','と','杏','圭','全','','馬','竜'];
+const PROMOTE_MAP = {1:11,2:12,3:13,4:14,6:16,7:17};
+
+function parseSfen(sfenStr) {
+  const parts = sfenStr.split(' ');
+  const rows = parts[0].split('/');
+  const board = Array.from({length:9}, ()=>Array(9).fill(null));
+  for(let r=0;r<9;r++) {
+    let c=0, promoted=false;
+    for(const ch of rows[r]) {
+      if(ch==='+') { promoted=true; continue; }
+      if(ch>='1'&&ch<='9') { c+=parseInt(ch); continue; }
+      const upper = ch.toUpperCase();
+      const pid = SFEN_PID[upper];
+      if(pid!==undefined) {
+        const finalP = promoted ? (PROMOTE_MAP[pid]||pid) : pid;
+        board[r][c] = {p:finalP, s:ch===upper?1:-1};
+        c++; promoted=false;
+      }
+    }
+  }
+  const hand = {s:{}, g:{}};
+  if(parts.length>2 && parts[2]!=='-') {
+    let cnt=0;
+    for(const ch of parts[2]) {
+      if(ch>='0'&&ch<='9') { cnt=cnt*10+parseInt(ch); continue; }
+      const upper = ch.toUpperCase();
+      const pid = SFEN_PID[upper];
+      if(pid!==undefined) {
+        const key = ch===upper?'s':'g';
+        hand[key][KOMA_LABEL[pid]] = (cnt||1);
+      }
+      cnt=0;
+    }
+  }
+  return {board, hand};
+}
+
+// =====================================================================
+// USI Move Parser
+// =====================================================================
+function parseUsiMove(usi) {
+  if(!usi) return null;
+  const dropM = usi.match(/^([PLNSGBR])\*(\d)([a-i])$/);
+  if(dropM) {
+    return {
+      to: {r: dropM[3].charCodeAt(0)-97, c: 9-parseInt(dropM[2])},
+      drop: true, piece: SFEN_PID[dropM[1]]
+    };
+  }
+  const m = usi.match(/^(\d)([a-i])(\d)([a-i])(\+)?$/);
+  if(!m) return null;
+  return {
+    from: {r: m[2].charCodeAt(0)-97, c: 9-parseInt(m[1])},
+    to:   {r: m[4].charCodeAt(0)-97, c: 9-parseInt(m[3])},
+    promote: !!m[5]
+  };
+}
+
+// =====================================================================
+// USI → Japanese Notation
+// =====================================================================
+const FILE_JP = ['９','８','７','６','５','４','３','２','１'];
+const RANK_JP = ['一','二','三','四','五','六','七','八','九'];
+
+function usiToJapanese(usi, sfenStr) {
+  const mv = parseUsiMove(usi);
+  if(!mv) return usi;
+  const toFile = FILE_JP[mv.to.c];
+  const toRank = RANK_JP[mv.to.r];
+  if(mv.drop) {
+    return toFile + toRank + KOMA_LABEL[mv.piece] + '打';
+  }
+  const {board} = parseSfen(sfenStr);
+  const cell = board[mv.from.r] && board[mv.from.r][mv.from.c];
+  if(!cell) return usi;
+  return toFile + toRank + KOMA_LABEL[cell.p] + (mv.promote ? '成' : '');
+}
+
+// =====================================================================
+// Apply USI Move to Board
+// =====================================================================
+const UNPROMOTE = {11:1,12:2,13:3,14:4,16:6,17:7};
+
+function applyUsiMove(board, hand, usi, isSente) {
+  const mv = parseUsiMove(usi);
+  if(!mv) return {board, hand};
+  const B = board.map(r=>r.map(c=>c?{...c}:null));
+  const H = {s:{...hand.s}, g:{...hand.g}};
+  const key = isSente ? 's' : 'g';
+  if(mv.drop) {
+    const lbl = KOMA_LABEL[mv.piece];
+    if(H[key][lbl] > 0) { H[key][lbl]--; if(H[key][lbl]===0) delete H[key][lbl]; }
+    B[mv.to.r][mv.to.c] = {p:mv.piece, s:isSente?1:-1};
+  } else {
+    const cell = B[mv.from.r][mv.from.c];
+    if(!cell) return {board:B, hand:H};
+    const target = B[mv.to.r][mv.to.c];
+    if(target) {
+      const base = UNPROMOTE[target.p] || target.p;
+      const lbl = KOMA_LABEL[base];
+      H[key][lbl] = (H[key][lbl]||0) + 1;
+    }
+    B[mv.from.r][mv.from.c] = null;
+    const np = mv.promote ? (PROMOTE_MAP[cell.p]||cell.p) : cell.p;
+    B[mv.to.r][mv.to.c] = {p:np, s:cell.s};
+  }
+  return {board:B, hand:H};
+}
+
+// =====================================================================
+// Build views array: initial + all moves (interpolate missing gote moves)
+// =====================================================================
+const views = [];
+const posIdxToViewIdx = [];  // positions index → view index
+
+function inferMove(bBefore, bAfter, side) {
+  // side: 1=sente, -1=gote
+  let from = null, to = null;
+  for(let r=0;r<9;r++) {
+    for(let c=0;c<9;c++) {
+      const a = bBefore[r][c], b = bAfter[r][c];
+      if(a && a.s===side && (!b || b.s!==side)) from = {r,c};
+      if(b && b.s===side && (!a || a.s!==side || a.p!==b.p)) to = {r,c};
+    }
+  }
+  return {from, to};
+}
+
+function inferLabel(moveNum, bBefore, bAfter, from, to) {
+  if(!to) return moveNum + '手目';
+  const piece = bAfter[to.r][to.c];
+  if(!piece) return moveNum + '手目';
+  let pLabel = KOMA_LABEL[piece.p];
+  let suffix = '';
+  if(from && bBefore[from.r] && bBefore[from.r][from.c]) {
+    const origP = bBefore[from.r][from.c].p;
+    if(origP !== piece.p && UNPROMOTE[piece.p]) {
+      pLabel = KOMA_LABEL[UNPROMOTE[piece.p]];
+      suffix = '成';
+    }
+  } else if(!from) {
+    suffix = '打';
+  }
+  return moveNum + '手目 — ' + FILE_JP[to.c] + RANK_JP[to.r] + pLabel + suffix;
+}
+
+(function buildViews() {
+  if(positions.length === 0) return;
+
+  // View 0: initial position — candidates = positions[0] (what engines suggest here)
+  const init = parseSfen(positions[0].sfen);
+  views.push({
+    board: init.board, hand: init.hand,
+    label: '初期局面', moveNum: 0,
+    from: null, to: null, posIdx: -1,
+    candidatePosIdx: 0,
+    divergence: 0, engine_results: null
+  });
+
+  for(let i = 0; i < positions.length; i++) {
+    const pos = positions[i];
+    const pre = parseSfen(pos.sfen);
+    const isSente = (pos.move_number % 2 === 1);
+    const mv = parseUsiMove(pos.selected_move);
+    const post = applyUsiMove(pre.board, pre.hand, pos.selected_move, isSente);
+    const moveJp = usiToJapanese(pos.selected_move, pos.sfen);
+
+    // Determine candidatePosIdx for the post-move view
+    // (= which record's decision is made FROM this board state?)
+    let nextCandIdx = -1;
+    if(i + 1 < positions.length) {
+      const gap = positions[i+1].move_number - pos.move_number;
+      if(gap === 1) nextCandIdx = i + 1;  // consecutive: next record decides from here
+      // gap >= 2: gote moves next (no engine data), so -1
+    }
+
+    posIdxToViewIdx[i] = views.length;
+    views.push({
+      board: post.board, hand: post.hand,
+      label: pos.move_number + '手目 — ' + moveJp,
+      moveNum: pos.move_number,
+      from: mv && mv.from ? mv.from : null,
+      to: mv ? mv.to : null,
+      posIdx: i,
+      candidatePosIdx: nextCandIdx,
+      divergence: pos.divergence || 0,
+      engine_results: pos.engine_results
+    });
+
+    // Interpolate missing moves between this record and the next
+    if(i + 1 < positions.length) {
+      const nextMoveNum = positions[i+1].move_number;
+      const gap = nextMoveNum - pos.move_number;
+      if(gap === 2) {
+        const nextPre = parseSfen(positions[i+1].sfen);
+        const missingNum = pos.move_number + 1;
+        const side = (missingNum % 2 === 1) ? 1 : -1;
+        const gm = inferMove(post.board, nextPre.board, side);
+        const gLabel = inferLabel(missingNum, post.board, nextPre.board, gm.from, gm.to);
+        views.push({
+          board: nextPre.board, hand: nextPre.hand,
+          label: gLabel, moveNum: missingNum,
+          from: gm.from, to: gm.to,
+          posIdx: -1,
+          candidatePosIdx: i + 1,  // next sente record decides from here
+          divergence: 0, engine_results: null
+        });
+      }
+    }
+  }
+})();
+
+// Mapping: positions index → view index (for chart/table clicks)
+function posToView(posIdx) {
+  return posIdxToViewIdx[posIdx] || (posIdx + 1);
+}
+
+// =====================================================================
+// Board Renderer (SVG)
+// =====================================================================
+function renderBoard(vIdx) {
+  const v = views[vIdx];
+  if(!v) return;
+  const board = v.board, hand = v.hand;
+  const svg = document.getElementById('board-svg');
+  const SZ = 396, MARGIN = 20, CELL = (SZ - MARGIN*2) / 9;
+  svg.innerHTML = '';
+
+  const ns = 'http://www.w3.org/2000/svg';
+  const g = (tag, attrs, parent) => {
+    const el = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k,val])=>el.setAttribute(k,val));
+    (parent||svg).appendChild(el); return el;
+  };
+
+  // Board background
+  g('rect', {x:MARGIN,y:MARGIN,width:SZ-MARGIN*2,height:SZ-MARGIN*2,fill:'#2a2318',rx:'1'});
+
+  // Grid lines
+  for(let i=0;i<=9;i++) {
+    const x=MARGIN+i*CELL, y=MARGIN+i*CELL;
+    g('line', {x1:x,y1:MARGIN,x2:x,y2:SZ-MARGIN,stroke:'rgba(255,255,255,0.12)','stroke-width':'0.5'});
+    g('line', {x1:MARGIN,y1:y,x2:SZ-MARGIN,y2:y,stroke:'rgba(255,255,255,0.12)','stroke-width':'0.5'});
+  }
+
+  // Highlight: move from/to
+  if(v.from) {
+    const cx = MARGIN + v.from.c*CELL, cy = MARGIN + v.from.r*CELL;
+    g('rect', {x:cx,y:cy,width:CELL,height:CELL,fill:'rgba(200,169,110,0.12)'});
+  }
+  if(v.to) {
+    const cx = MARGIN + v.to.c*CELL, cy = MARGIN + v.to.r*CELL;
+    g('rect', {x:cx,y:cy,width:CELL,height:CELL,fill:'rgba(200,169,110,0.25)'});
+  }
+
+  // Engine candidate markers — show what engines recommend FROM this board
+  const ENG_MARKER = [
+    ['水匠5',         'rgba(106,172,220,0.35)', 'rgba(106,172,220,0.7)', 0.38],
+    ['tanuki',        'rgba(220,138,106,0.35)', 'rgba(220,138,106,0.7)', 0.33],
+    ['Kristallweizen','rgba(138,220,154,0.35)', 'rgba(138,220,154,0.7)', 0.28],
+    ['dlshogi',       'rgba(200,138,220,0.35)', 'rgba(200,138,220,0.7)', 0.23]
+  ];
+  const candPos = (v.candidatePosIdx >= 0 && v.candidatePosIdx < positions.length)
+    ? positions[v.candidatePosIdx] : null;
+  if(candPos && candPos.engine_results) {
+    for(const [eName, eFill, eStroke, eR] of ENG_MARKER) {
+      const er = candPos.engine_results[eName];
+      if(er && er.best_move) {
+        const emv = parseUsiMove(er.best_move);
+        if(emv) {
+          const mx = MARGIN + emv.to.c*CELL + CELL/2;
+          const my = MARGIN + emv.to.r*CELL + CELL/2;
+          g('circle', {cx:mx,cy:my,r:CELL*eR,fill:eFill,stroke:eStroke,'stroke-width':'1.5'});
+        }
+      }
+    }
+  }
+
+  // Pieces
+  for(let r=0;r<9;r++) {
+    for(let c=0;c<9;c++) {
+      const cell = board[r][c];
+      if(!cell) continue;
+      const cx = MARGIN + c*CELL + CELL/2;
+      const cy = MARGIN + r*CELL + CELL/2;
+      const isGote = cell.s === -1;
+      const lbl = KOMA_LABEL[cell.p] || '?';
+      const isPromoted = cell.p >= 11;
+      const textCol = isPromoted ? '#c8a96e' : (isGote ? '#9ab8cc' : '#e8e4dc');
+      const t = g('text', {
+        x:cx, y:cy + CELL*0.3,
+        'text-anchor':'middle',
+        'dominant-baseline':'middle',
+        fill: textCol,
+        'font-size': CELL * 0.55,
+        'font-family': 'Yu Mincho, YuMincho, 游明朝, Hiragino Mincho ProN, serif',
+        transform: isGote ? `rotate(180,${cx},${cy})` : ''
+      });
+      t.textContent = lbl;
+    }
+  }
+
+  // Coordinate labels
+  const colLabels = ['９','８','７','６','５','４','３','２','１'];
+  const rowLabels = ['一','二','三','四','五','六','七','八','九'];
+  for(let i=0;i<9;i++) {
+    g('text', {x:MARGIN+i*CELL+CELL/2, y:MARGIN-4, 'text-anchor':'middle',
+      'font-size':'7', fill:'rgba(255,255,255,0.3)', 'font-family':'var(--font-mono)'}).textContent = colLabels[i];
+    g('text', {x:SZ-MARGIN+4, y:MARGIN+i*CELL+CELL/2, 'text-anchor':'start',
+      'dominant-baseline':'middle', 'font-size':'7', fill:'rgba(255,255,255,0.3)',
+      'font-family':'Yu Mincho, YuMincho, 游明朝, Hiragino Mincho ProN, serif'}).textContent = rowLabels[i];
+  }
+
+  // Move counter
+  document.getElementById('move-counter').textContent = v.label;
+
+  // Captured pieces
+  const fmtCaps = (cap) => {
+    const parts = Object.entries(cap).filter(([,n])=>n>0).map(([k,n])=>n>1?k+n:k);
+    return parts.length ? parts.join(' ') : 'なし';
+  };
+  document.getElementById('cap-sente').textContent = fmtCaps(hand.s);
+  document.getElementById('cap-gote').textContent = fmtCaps(hand.g);
+
+  // Highlight active row in move table
+  document.querySelectorAll('#move-table tbody tr.move-active').forEach(
+    tr => tr.classList.remove('move-active'));
+  const targetMoveNum = (v.posIdx >= 0) ? positions[v.posIdx].move_number : v.moveNum - 1;
+  const activeRow = document.getElementById('move-' + targetMoveNum);
+  if(activeRow) {
+    activeRow.classList.add('move-active');
+    activeRow.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+}
+
+// =====================================================================
+// Navigation
+// =====================================================================
+function goTo(idx) {
+  if(idx < 0) idx = 0;
+  if(idx >= views.length) idx = views.length - 1;
+  boardIdx = idx;
+  renderBoard(idx);
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'ArrowLeft')  { e.preventDefault(); goTo(boardIdx - 1); }
+  if(e.key === 'ArrowRight') { e.preventDefault(); goTo(boardIdx + 1); }
+  if(e.key === 'Home')       { e.preventDefault(); goTo(0); }
+  if(e.key === 'End')        { e.preventDefault(); goTo(views.length - 1); }
+});
+
+// =====================================================================
+// Convert USI to Japanese in move table
+// =====================================================================
+document.querySelectorAll('.move-jp').forEach(el => {
+  const idx = parseInt(el.dataset.idx);
+  const usi = el.dataset.usi || el.textContent.trim();
+  if(idx >= 0 && idx < positions.length && usi) {
+    el.textContent = usiToJapanese(usi, positions[idx].sfen);
+  }
+});
+// Engine best moves in table
+document.querySelectorAll('.eng-bm').forEach(el => {
+  const idx = parseInt(el.dataset.idx);
+  const usi = el.dataset.usi;
+  if(idx >= 0 && idx < positions.length && usi) {
+    el.textContent = usiToJapanese(usi, positions[idx].sfen);
+  }
+});
+
+// =====================================================================
+// Charts (Chart.js)
+// =====================================================================
+function initCharts() {
+  // Ensemble の手番のみチャートに表示（評価値がある手）
+  const ensemblePositions = positions.filter(p => !p.is_opponent);
+  const ensembleIndices = positions.map((p, i) => p.is_opponent ? -1 : i).filter(i => i >= 0);
+  const labels = ensemblePositions.map(p => p.move_number);
+  const divData = ensemblePositions.map(p => p.divergence);
+
+  const ENGINE_NAMES = ['水匠5', 'tanuki', 'Kristallweizen', 'dlshogi'];
+  const ENGINE_CHART_COLORS = ['#6aacdc', '#dc8a6a', '#8adc9a', '#c88adc'];
+
+  const engineDatasets = ENGINE_NAMES.map((name, ei) => ({
+    label: name,
+    data: ensemblePositions.map(p => {
+      const e = p.engine_results[name];
+      return e ? e.score : null;
+    }),
+    borderColor: ENGINE_CHART_COLORS[ei],
+    backgroundColor: ENGINE_CHART_COLORS[ei] + '1a',
+    borderWidth: 1.5,
+    pointRadius: 2,
+    pointHoverRadius: 5,
+    tension: 0.2,
+    fill: false,
+    spanGaps: true
+  }));
+
+  const chartFont = { family: "'JetBrains Mono', monospace", size: 10 };
+  const gridColor = 'rgba(255,255,255,0.06)';
+  const tickColor = 'rgba(255,255,255,0.3)';
+
+  // Evaluation chart (4 engines)
+  const evalCtx = document.getElementById('evalChart').getContext('2d');
+  window.evalChartInstance = new Chart(evalCtx, {
+    type: 'line',
+    data: { labels, datasets: engineDatasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      onClick: (e, elements) => {
+        if(elements.length > 0) goTo(posToView(ensembleIndices[elements[0].index]));
+      },
+      plugins: {
+        legend: {
+          labels: { color: tickColor, font: chartFont }
+        },
+        tooltip: {
+          callbacks: {
+            title: (items) => items[0].label + '手目',
+            afterBody: (items) => {
+              const idx = items[0].dataIndex;
+              const d = ensemblePositions[idx].divergence;
+              return '乖離: ' + d + 'cp';
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: '手数', color: tickColor, font: chartFont },
+          ticks: { color: tickColor, font: chartFont },
+          grid: { color: gridColor }
+        },
+        y: {
+          title: { display: true, text: '評価値 (cp)', color: tickColor, font: chartFont },
+          ticks: { color: tickColor, font: chartFont },
+          grid: { color: gridColor }
+        }
+      }
+    }
+  });
+
+  // Divergence chart
+  const divCtx = document.getElementById('divChart').getContext('2d');
+  const divColors = divData.map(d => d >= DIVERGENCE_THRESHOLD ? 'rgba(220,106,106,0.8)' : 'rgba(220,106,106,0.3)');
+  new Chart(divCtx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: '乖離',
+        data: divData,
+        backgroundColor: divColors,
+        borderColor: divColors,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      onClick: (e, elements) => {
+        if(elements.length > 0) goTo(posToView(ensembleIndices[elements[0].index]));
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => items[0].label + '手目',
+            label: (item) => '乖離: ' + item.raw + 'cp'
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: tickColor, font: chartFont },
+          grid: { color: gridColor }
+        },
+        y: {
+          title: { display: true, text: '乖離 (cp)', color: tickColor, font: chartFont },
+          ticks: { color: tickColor, font: chartFont },
+          grid: { color: gridColor }
+        }
+      }
+    }
+  });
+}
+
+// =====================================================================
+// Init
+// =====================================================================
+if(views.length > 0) {
+  renderBoard(0);
+  initCharts();
+}
+</script>
+</div>
+</body>
+</html>
