@@ -19,6 +19,7 @@
   <ul class="nav-links">
     <li><a href="#games">Games</a></li>
     <li><a href="kiri_games/index.html">AI対戦</a></li>
+    <li><a href="http://localhost:8080" target="_blank">リアルタイム解析</a></li>
     <li><a href="#archive">Archive</a></li>
     <li><a href="#about">About</a></li>
   </ul>
@@ -92,6 +93,7 @@
   <div class="games-tabs">
     <button class="games-tab active" data-tab="analysis">棋譜解析</button>
     <button class="games-tab" data-tab="ai-battle">AI対戦</button>
+    <button class="games-tab" data-tab="realtime">リアルタイム解析</button>
   </div>
 
   <!-- TAB: 棋譜解析 -->
@@ -225,6 +227,18 @@
       </div>
     </a>
   </div><!-- /tab-ai-battle -->
+
+  <div class="tab-panel" id="tab-realtime">
+    <a href="http://localhost:8080" target="_blank" class="ai-battle-card">
+      <div class="ai-battle-card-icon">◉</div>
+      <div class="ai-battle-card-body">
+        <p class="ai-battle-card-title">Real-time Analysis</p>
+        <p class="ai-battle-card-title-jp">リアルタイム4エンジン解析</p>
+        <p class="ai-battle-card-desc">水匠5・Háo・ふかうら王A・ふかうら王Bの4エンジンで任意の局面をリアルタイム評価。KIF棋譜の読み込み、途中からの分岐探索に対応。ローカルサーバー（localhost:8080）で起動。</p>
+        <span class="ai-battle-card-link">解析ツールを開く →</span>
+      </div>
+    </a>
+  </div><!-- /tab-realtime -->
 
 </section>
 
