@@ -17,6 +17,11 @@
   --text-muted: #5a5652;
   --accent-gold: #c8a96e;
   --accent-gold-dim: rgba(200,169,110,0.15);
+  --engine-mizusho: #6aacdc;
+  --engine-hao: #dc8a6a;
+  --engine-shinden: #8adc9a;
+  --engine-fka: #c88adc;
+  --engine-fkb: #dca88a;
   --font-serif-en: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
   --font-serif-jp: 'Yu Mincho', 'YuMincho', '游明朝', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
@@ -120,6 +125,17 @@ a:hover { text-decoration: underline; }
 }
 .summary-card .value.win { color: #6adc8a; }
 .summary-card .value.loss { color: #dc6a6a; }
+.summary-card .value.draw { color: var(--text-secondary); }
+
+/* ---- SECTION LABEL ---- */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
 
 /* ---- TABLE ---- */
 .data-table {
@@ -148,13 +164,23 @@ a:hover { text-decoration: underline; }
   background: var(--bg-card-hover);
 }
 .data-table .num { text-align: right; }
+
 .game-link { color: var(--text-primary); }
 .game-link:hover { color: var(--accent-gold); }
-.result-win { color: #6adc8a; }
-.result-loss { color: #dc6a6a; }
-.result-draw { color: var(--text-secondary); }
 
-/* ---- RESPONSIVE ---- */
+.row-divergent td {
+  background: rgba(220,106,106,0.08);
+}
+.row-divergent:hover td {
+  background: rgba(220,106,106,0.14);
+}
+.div-high {
+  color: #dc6a6a;
+  font-weight: 600;
+}
+
+.clickable { cursor: pointer; }
+
 @media (max-width: 640px) {
   .topnav { padding: 0 1rem; }
   .container { padding: 1.2rem 0.8rem 3rem; }
@@ -162,6 +188,7 @@ a:hover { text-decoration: underline; }
   .data-table { font-size: 0.7rem; }
   .data-table th, .data-table td { padding: 0.35rem 0.4rem; }
 }
+
   </style>
 </head>
 <body>
@@ -182,7 +209,7 @@ a:hover { text-decoration: underline; }
 <div class="summary-row">
   <div class="summary-card">
     <div class="label">Total Games</div>
-    <div class="value">1</div>
+    <div class="value">2</div>
   </div>
   <div class="summary-card">
     <div class="label">Wins</div>
@@ -211,16 +238,23 @@ a:hover { text-decoration: underline; }
   </thead>
   <tbody>
     <tr>
-      <td><a class="game-link" href="floodgate_20260330_kiri_vs_tongmiaoqwen.html">2026-03-30 22:32</a></td>
+      <td><a class="game-link" href="floodgate_20260330_tongmiaoqwen_vs_Kiri_d12.html">2026/03/30 23:16:30</a></td>
       <td>tongmiaoqwen</td>
-      <td>Kiri</td>
+      <td>Kiri_d12</td>
       <td class="result-loss">負け</td>
-      <td class="num">103</td>
-      <td>default-1500-0</td>
+      <td class="num">105</td>
+      <td>25:00+00</td>
+    </tr>    <tr>
+      <td><a class="game-link" href="floodgate_20260330_tongmiaoqwen_vs_Kiri.html"></a></td>
+      <td>?</td>
+      <td>?</td>
+      <td class="">?</td>
+      <td class="num">0</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
 
-</div><!-- /container -->
+</div>
 </body>
 </html>
